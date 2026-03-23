@@ -13,7 +13,7 @@ openssl_file_encrypt() {
 
     local cmd=(openssl enc -"${cipher}" -salt -pbkdf2 -in "$input" -out "$output" -pass "pass:${password}")
 
-    _grim_command_run "${cmd[@]}"
+    "${cmd[@]}"
 }
 
 # Decrypt a file using AES-256-CBC
@@ -31,7 +31,7 @@ openssl_file_decrypt() {
 
     local cmd=(openssl enc -d -"${cipher}" -pbkdf2 -in "$input" -out "$output" -pass "pass:${password}")
 
-    _grim_command_run --error "Decryption failed: wrong password or corrupted file" "${cmd[@]}"
+    "${cmd[@]}" || _grim_message_error "Decryption failed: wrong password or corrupted file"
 }
 
 _grim_command_complete_params "openssl_file_encrypt" "input" "output" "password" "cipher"

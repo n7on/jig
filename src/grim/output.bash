@@ -5,42 +5,6 @@ declare -g _GRIM_OUTPUT_HEADERS=""
 declare -g _GRIM_OUTPUT_EXTRACTOR=""
 declare -g _GRIM_OUTPUT_TYPE="awk"
 
-# Run a command, piping stdout through while capturing stderr
-# On failure, stderr is logged via grim_message_error
-# Usage: _grim_command_run "${cmd[@]}" | _grim_command_output_render
-#        _grim_command_run --error "Something went wrong" "${cmd[@]}"
-_grim_command_run() {
-    local custom_error=""
-    if [[ "$1" == "--error" ]]; then
-        custom_error="$2"
-        shift 2
-    fi
-
-    if [[ "${dry_run:-}" == "true" ]]; then
-        echo "$*"
-        return 0
-    fi
-
-    local stderr_file
-    stderr_file=$(mktemp)
-
-    "$@" 2>"$stderr_file"
-    local rc=$?
-
-    if [[ $rc -ne 0 ]]; then
-        if [[ -n "$custom_error" ]]; then
-            grim_message_error "$custom_error"
-        else
-            local err
-            err=$(grep -m1 . "$stderr_file")
-            [[ -n "$err" ]] && grim_message_error "$err"
-        fi
-    fi
-
-    rm -f "$stderr_file"
-    return $rc
-}
-
 # Set output headers and extractor for rendering
 # Usage: _grim_command_output_set "IP,PORT,STATE,SERVICE" '{print $2, $1, $3, $4}'
 #        _grim_command_output_set "name,ip" '.[].name + "\t" + .[].ip' jq
@@ -63,18 +27,12 @@ _grim_command_output_render() {
     local input
     input=$(cat)
 
-    # Dry run: pass through raw input
-    if [[ "${dry_run:-}" == "true" ]]; then
-        echo "$input"
-        return 0
-    fi
-
     # Extract data using the configured extractor
     local data
     case "$type" in
         jq)
             _grim_command_requires jq || {
-                grim_message_error "jq required for jq extractor"
+                _grim_message_error "jq required for jq extractor"
                 return 1
             }
             data=$(echo "$input" | jq -r "$extractor" 2>/dev/null)
@@ -106,7 +64,7 @@ _grim_command_output_json() {
     local data="$2"
     
     _grim_command_requires jq || {
-        grim_message_error "jq required for JSON output"
+        _grim_message_error "jq required for JSON output"
         return 1
     }
     

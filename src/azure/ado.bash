@@ -20,7 +20,7 @@ azure_ado_download_latest_feed_package() {
     pkg=$(az rest --method GET --resource "$_ms_ado_app_id" --url "$url" 2>/dev/null | \
         jq -r --arg name "$package" '.value[] | select(.name == $name)')
 
-    [[ -z "$pkg" ]] && grim_message_error "Package '$package' not found in feed '$feed'" && return 1
+    [[ -z "$pkg" ]] && _grim_message_error "Package '$package' not found in feed '$feed'" && return 1
 
     version=$(jq -r '.versions[0].version' <<< "$pkg")
 

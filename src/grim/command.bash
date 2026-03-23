@@ -10,6 +10,7 @@ _grim_command_complete_filter() {
     local items="$1"
     local cur="$2"
     compgen -W "$items" -- "$cur"
+    
 }
 
 # Check that required commands are available
@@ -24,7 +25,7 @@ _grim_command_requires() {
     done
     
     if [[ -n "$missing" ]]; then
-        grim_message_error "Required commands not found: ${missing%% }"
+        _grim_message_error "Required commands not found: ${missing%% }"
         return 1
     fi
 }
@@ -40,9 +41,6 @@ _grim_command_param_init() {
     # Always add default parameters
     _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
     _GRIM_COMMAND_FLAGS["${func}:output_format"]="table"
-    _GRIM_COMMAND_PARAMS["${func}:dry_run"]=1
-    _GRIM_COMMAND_FLAGS["${func}:dry_run"]="false"
-    
     for param in "$@"; do
         if [[ "$param" == *"="* ]]; then
             # Has default value
@@ -87,7 +85,13 @@ _grim_command_param_parse() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --*=*) flags["${1%%=*}"]="${1#*=}" ;;
-            --*) flags["$1"]="${2:-}"; shift ;;
+            --*)
+                if [[ -n "${2:-}" && "${2:-}" != --* ]]; then
+                    flags["$1"]="${2}"; shift
+                else
+                    flags["$1"]="true"
+                fi
+                ;;
             *) args+=("$1") ;;
         esac
         shift
@@ -143,7 +147,7 @@ _grim_command_param_validate() {
     
     # Check required
     if [[ $required -eq 1 && -z "$value" ]]; then
-        grim_message_error "Parameter --$param is required"
+        _grim_message_error "Parameter --$param is required"
         return 1
     fi
     
@@ -152,7 +156,7 @@ _grim_command_param_validate() {
     
     # Validate regex if provided
     if [[ -n "$regex" && ! "$value" =~ $regex ]]; then
-        grim_message_error "Parameter --$param does not match pattern: $regex, got: $value"
+        _grim_message_error "Parameter --$param does not match pattern: $regex, got: $value"
         return 1
     fi
 
@@ -161,12 +165,12 @@ _grim_command_param_validate() {
         case "$path_type" in
             file)
                 if [[ ! -f "$value" ]]; then
-                    grim_message_error "Parameter --$param: file not found: $value"
+                    _grim_message_error "Parameter --$param: file not found: $value"
                     return 1
                 fi ;;
             dir)
                 if [[ ! -d "$value" ]]; then
-                    grim_message_error "Parameter --$param: directory not found: $value"
+                    _grim_message_error "Parameter --$param: directory not found: $value"
                     return 1
                 fi ;;
         esac
@@ -181,15 +185,12 @@ _grim_command_complete_params() {
     
     # Always include default parameters for all commands
     _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
-    _GRIM_COMMAND_PARAMS["${func}:dry_run"]=1
-
     for param in "$@"; do
         _GRIM_COMMAND_PARAMS["${func}:${param}"]=1
     done
 
     # Auto-register value completions for default parameters
     _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table csv raw"
-    _GRIM_COMMAND_COMPLETERS["${func}:--dry_run"]="true false"
     
     # Register completion handler if not already done
     if ! complete -p "$func" &>/dev/null; then

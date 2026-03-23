@@ -13,18 +13,18 @@ openssl_client_connect() {
     local cmd=(openssl s_client -connect "${host}:${port}")
 
     _grim_command_output_set "SUBJECT,ISSUER,NOTBEFORE,NOTAFTER" '/subject=/{sub(/subject=/, ""); subj=$0} /issuer=/{sub(/issuer=/, ""); iss=$0} /notBefore=/{sub(/.*notBefore=/, ""); nb=$0} /notAfter=/{sub(/.*notAfter=/, ""); na=$0} /END CERTIFICATE/{printf "%s\t%s\t%s\t%s\n", subj, iss, nb, na}'
-    echo -e "${message}" | _grim_command_run "${cmd[@]}" | _grim_command_output_render
+    echo -e "${message}" | "${cmd[@]}" | _grim_command_output_render
 }
 
 _grim_command_complete_params "openssl_client_connect" "host" "port" "message"
 
-_complete_openssl_messages() {
+_openssl_complete_messages() {
     echo '"QUIT"'
     echo '"STARTTLS"'
     echo '"EHLO test"'
     echo '"GET / HTTP/1.1\r\n"'
 }
-_grim_command_complete_func "openssl_client_connect" "message" _complete_openssl_messages
+_grim_command_complete_func "openssl_client_connect" "message" _openssl_complete_messages
 
 _grim_command_complete_values "openssl_client_connect" "port" \
     "443" "8443" "587" "465" "993" "995" "636" "853" "5223" "8080"
