@@ -12,6 +12,11 @@ _grim_command_output_set() {
     _GRIM_OUTPUT_HEADERS="$1"
     _GRIM_OUTPUT_EXTRACTOR="$2"
     _GRIM_OUTPUT_TYPE="${3:-awk}"
+
+    case "$_GRIM_OUTPUT_TYPE" in
+        awk|jq) ;;
+        *) _grim_message_error "Invalid output type: $_GRIM_OUTPUT_TYPE (expected: awk, jq)"; return 1 ;;
+    esac
 }
 
 # Format and output data based on selected format
@@ -22,6 +27,11 @@ _grim_command_output_render() {
     local headers="$_GRIM_OUTPUT_HEADERS"
     local extractor="$_GRIM_OUTPUT_EXTRACTOR"
     local type="$_GRIM_OUTPUT_TYPE"
+
+    case "$format" in
+        raw|json|csv|table) ;;
+        *) _grim_message_error "Invalid output format: $format (expected: raw, json, csv, table)"; return 1 ;;
+    esac
 
     # Read input
     local input
@@ -37,7 +47,7 @@ _grim_command_output_render() {
             }
             data=$(echo "$input" | jq -r "$extractor" 2>/dev/null)
             ;;
-        awk|*)
+        awk)
             data=$(echo "$input" | awk "$extractor" 2>/dev/null)
             ;;
     esac
@@ -52,7 +62,7 @@ _grim_command_output_render() {
         csv)
             _grim_command_output_csv "$headers" "$data"
             ;;
-        table|*)
+        table)
             _grim_command_output_table "$headers" "$data"
             ;;
     esac

@@ -16,8 +16,13 @@ _grim_command_complete_filter() {
 # Check that required commands are available
 # Usage: _grim_command_requires jq az curl
 _grim_command_requires() {
+    if [[ $# -eq 0 ]]; then
+        _grim_message_error "_grim_command_requires: no commands specified"
+        return 1
+    fi
+
     local missing=""
-    
+
     for cmd in "$@"; do
         if ! command -v "$cmd" &>/dev/null; then
             missing+="$cmd "
@@ -28,6 +33,57 @@ _grim_command_requires() {
         _grim_message_error "Required commands not found: ${missing%% }"
         return 1
     fi
+}
+
+# Run a command array, piping stdout to output_render and capturing stderr as warnings
+# Usage: local cmd=(nmap -T4 -p- "$target")
+#        _grim_command_run "${cmd[@]}"
+_grim_command_run() {
+    if [[ $# -eq 0 ]]; then
+        _grim_message_error "_grim_command_run: no command specified"
+        return 1
+    fi
+
+    local stderr_file
+    stderr_file=$(mktemp)
+
+    "$@" 2>"$stderr_file" | _grim_command_output_render
+
+    local rc=${PIPESTATUS[0]}
+
+    if [[ -s "$stderr_file" ]]; then
+        while IFS= read -r line; do
+            _grim_message_warn "$line"
+        done < "$stderr_file"
+    fi
+
+    rm -f "$stderr_file"
+    return "$rc"
+}
+
+# Run a command array, capturing stderr as warnings (no output rendering)
+# Usage: _grim_command_exec "${cmd[@]}"
+_grim_command_exec() {
+    if [[ $# -eq 0 ]]; then
+        _grim_message_error "_grim_command_exec: no command specified"
+        return 1
+    fi
+
+    local stderr_file
+    stderr_file=$(mktemp)
+
+    "$@" 2>"$stderr_file"
+
+    local rc=$?
+
+    if [[ -s "$stderr_file" ]]; then
+        while IFS= read -r line; do
+            _grim_message_warn "$line"
+        done < "$stderr_file"
+    fi
+
+    rm -f "$stderr_file"
+    return "$rc"
 }
 
 # Declare parameters and optional defaults for the calling function
@@ -173,6 +229,9 @@ _grim_command_param_validate() {
                     _grim_message_error "Parameter --$param: directory not found: $value"
                     return 1
                 fi ;;
+            *)
+                _grim_message_error "Invalid path type: $path_type (expected: file, dir)"
+                return 1 ;;
         esac
     fi
 }
@@ -234,8 +293,10 @@ _grim_command_complete_dispatch() {
     # If previous word is a flag, check for function completer first, then static values
     if [[ -v _GRIM_COMMAND_COMPLETER_FUNCS["${func}:${prev}"] ]]; then
         local completer="${_GRIM_COMMAND_COMPLETER_FUNCS[${func}:${prev}]}"
+        local values
+        values=$("$completer" "$cur")
         local IFS=$'\n'
-        COMPREPLY=($("$completer" "$cur"))
+        COMPREPLY=($(compgen -W "$values" -- "$cur"))
     elif [[ -v _GRIM_COMMAND_COMPLETERS["${func}:${prev}"] ]]; then
         local values="${_GRIM_COMMAND_COMPLETERS[${func}:${prev}]}"
         COMPREPLY=($(compgen -W "$values" -- "$cur"))

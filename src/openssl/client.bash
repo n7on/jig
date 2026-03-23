@@ -13,7 +13,7 @@ openssl_client_connect() {
     local cmd=(openssl s_client -connect "${host}:${port}")
 
     _grim_command_output_set "SUBJECT,ISSUER,NOTBEFORE,NOTAFTER" '/subject=/{sub(/subject=/, ""); subj=$0} /issuer=/{sub(/issuer=/, ""); iss=$0} /notBefore=/{sub(/.*notBefore=/, ""); nb=$0} /notAfter=/{sub(/.*notAfter=/, ""); na=$0} /END CERTIFICATE/{printf "%s\t%s\t%s\t%s\n", subj, iss, nb, na}'
-    echo -e "${message}" | "${cmd[@]}" | _grim_command_output_render
+    echo -e "${message}" | _grim_command_run "${cmd[@]}"
 }
 
 _grim_command_complete_params "openssl_client_connect" "host" "port" "message"

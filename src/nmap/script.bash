@@ -12,7 +12,7 @@ nmap_script_run() {
     [[ -n "$ports" ]] && cmd+=(-p "$ports")
     
     _grim_command_output_set "PORT,STATE,SERVICE" '/^[0-9]+\//{printf "%s\t%s\t%s\n", $1, $2, $3}'
-    "${cmd[@]}" | _grim_command_output_render
+    _grim_command_run "${cmd[@]}"
 }
 
 # Register parameters
