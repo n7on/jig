@@ -1,6 +1,5 @@
 
 # Fetch all pages from a Graph API endpoint, returning a single JSON array
-# Usage: _azure_entra_get_all "https://graph.microsoft.com/v1.0/users"
 _azure_entra_get_all() {
     local url="$1"
     local all="[]"
@@ -21,9 +20,8 @@ _azure_entra_get_all() {
 
 azure_entra_license() {
     _grim_command_requires az jq || return 1
-
-    _grim_command_param_init
-    _grim_command_param_parse "$@"
+    _grim_command_description "List Azure Entra license information"
+    _grim_command_param_parse "$@" || return 1
 
     local result
     result=$(_azure_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
@@ -34,13 +32,11 @@ azure_entra_license() {
     echo "$result" | _grim_command_output_render
 }
 
-_grim_command_complete_params "azure_entra_license"
-
 azure_entra_user_list() {
     _grim_command_requires az jq || return 1
-
-    _grim_command_param_init filter
-    _grim_command_param_parse "$@"
+    _grim_command_description "List Azure Entra users with license and MFA info"
+    _grim_command_param filter --positional --help "OData filter expression"
+    _grim_command_param_parse "$@" || return 1
 
     local user_url="https://graph.microsoft.com/v1.0/users?\$select=displayName,userPrincipalName,assignedLicenses"
     [[ -n "$filter" ]] && user_url+="&\$filter=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$filter")"
@@ -71,4 +67,6 @@ azure_entra_user_list() {
     echo "$result" | _grim_command_output_render
 }
 
+# Register completions
+_grim_command_complete_params "azure_entra_license"
 _grim_command_complete_params "azure_entra_user_list" "filter"
