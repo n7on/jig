@@ -98,17 +98,24 @@ config.env.example      — configuration template
 pyproject.toml          — Python dependencies (managed by uv)
 src/
 ├── init.bash           — source this in .bashrc
-├── grim/               — framework utilities
+├── _grim/              — framework utilities
 │   ├── command.bash
 │   ├── message.bash
 │   └── output.bash
-└── <namespace>/        — command modules
-    ├── module.bash
-    ├── kql/            — KQL query files
-    └── python/         — Python scripts
+└── <namespace>/        — command modules (e.g. azure/, nmap/)
+    ├── module.bash     — bash commands (e.g. azure_graph_query)
+    ├── kql/            — KQL query files, organised by command/topic
+    │   ├── graph/      — queries for azure_graph_query
+    │   │   └── <resource-type>/<query-name>.kql
+    │   └── law/        — queries for azure_law_query
+    │       └── <topic>/<query-name>.kql
+    └── python/         — Python scripts called from bash commands
 ~/.grim/
 ├── config.env          — your configuration
-├── kql/                — user-defined KQL queries (override repo queries)
+├── kql/                — user-defined KQL queries (mirror src structure, override repo queries)
+│   └── <namespace>/
+│       └── graph|law/
+│           └── <topic>/<query-name>.kql
 └── *.bash              — user-defined command extensions
 ```
 
