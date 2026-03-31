@@ -4,9 +4,15 @@ set -euo pipefail
 _GRIM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _GRIM_USER_DIR="$HOME/.grim"
 
-# Check for uv
-if ! command -v uv &>/dev/null; then
-    echo "Error: uv is not installed. Install it from https://docs.astral.sh/uv/getting-started/installation/" >&2
+# Check for python3
+if ! command -v python3 &>/dev/null; then
+    echo "Error: python3 is not installed." >&2
+    exit 1
+fi
+
+# Check for python3-venv
+if ! python3 -c "import ensurepip" &>/dev/null; then
+    echo "Error: python3-venv is not installed. Run: sudo apt install python3-venv" >&2
     exit 1
 fi
 
@@ -23,10 +29,10 @@ if [[ ! -f "$_GRIM_USER_DIR/config.env" ]]; then
     echo "Edit $_GRIM_USER_DIR/config.env to configure grim."
 fi
 
-# Install/update Python dependencies
+# Create/update virtualenv and install Python dependencies
 echo "Installing Python dependencies..."
-cd "$_GRIM_DIR"
-uv sync
+python3 -m venv "$_GRIM_DIR/.venv"
+"$_GRIM_DIR/.venv/bin/pip" install --quiet "$_GRIM_DIR"
 
 echo ""
 echo "Setup complete. Add the following line to your .bashrc:"

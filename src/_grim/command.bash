@@ -86,6 +86,41 @@ _grim_command_run() {
     return "$rc"
 }
 
+# Run a Python script from a namespace's python/ directory, capturing stderr as warnings
+# Usage: _grim_command_exec_python <namespace> <script.py> [args...]
+_grim_command_exec_python() {
+    if [[ $# -lt 2 ]]; then
+        _grim_message_error "_grim_command_exec_python: usage: _grim_command_exec_python <namespace> <script.py> [args...]"
+        return 1
+    fi
+
+    local namespace="$1"
+    local script="$2"
+    shift 2
+
+    local script_path="$_GRIM_DIR/src/$namespace/python/$script"
+    if [[ ! -f "$script_path" ]]; then
+        _grim_message_error "Python script not found: $script_path"
+        return 1
+    fi
+
+    local stderr_file
+    stderr_file=$(mktemp)
+
+    "$_GRIM_PYTHON" "$script_path" "$@" 2>"$stderr_file"
+
+    local rc=$?
+
+    if [[ -s "$stderr_file" ]]; then
+        while IFS= read -r line; do
+            _grim_message_warn "$line"
+        done < "$stderr_file"
+    fi
+
+    rm -f "$stderr_file"
+    return "$rc"
+}
+
 # Run a command array, capturing stderr as warnings (no output rendering)
 # Usage: _grim_command_exec "${cmd[@]}"
 _grim_command_exec() {

@@ -4,7 +4,7 @@ A lightweight bash framework for clean CLI tools with parameters, validation, ou
 
 ## Setup
 
-**Requirements:** [uv](https://docs.astral.sh/uv/getting-started/installation/)
+**Requirements:** python3 (for Excel export; already available on Ubuntu 24)
 
 ```bash
 # Clone and run setup (creates ~/.grim/, installs Python deps)

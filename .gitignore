@@ -1,4 +1,6 @@
 .env*
 .claude
 .venv/
+build/
+*.egg-info/
 
