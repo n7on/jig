@@ -1,6 +1,6 @@
 
-_azure_graph_queries_dir="$(dirname "${BASH_SOURCE[0]}")/queries/graph"
-_azure_graph_user_queries_dir="$HOME/.grim/queries/azure/graph"
+_azure_graph_queries_dir="$(dirname "${BASH_SOURCE[0]}")/kql/graph"
+_azure_graph_user_queries_dir="$HOME/.grim/kql/azure/graph"
 
 _azure_graph_get_query_names() {
     local -A seen

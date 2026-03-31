@@ -39,7 +39,7 @@ azure_entra_user_list() {
     _grim_command_param_parse "$@" || return 1
 
     local user_url="https://graph.microsoft.com/v1.0/users?\$select=displayName,userPrincipalName,assignedLicenses,accountEnabled"
-    [[ -n "$filter" ]] && user_url+="&\$filter=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$filter")"
+    [[ -n "$filter" ]] && user_url+="&\$filter=$(jq -rn --arg s "$filter" '$s | @uri')"
 
     local skus users mfa
     skus=$(_azure_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1

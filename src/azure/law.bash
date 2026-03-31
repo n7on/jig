@@ -1,6 +1,6 @@
 
-_azure_law_queries_dir="$(dirname "${BASH_SOURCE[0]}")/queries/law"
-_azure_law_user_queries_dir="$HOME/.grim/queries/azure/law"
+_azure_law_queries_dir="$(dirname "${BASH_SOURCE[0]}")/kql/law"
+_azure_law_user_queries_dir="$HOME/.grim/kql/azure/law"
 
 _azure_law_get_query_names() {
     local -A seen

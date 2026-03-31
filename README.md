@@ -2,12 +2,19 @@
 
 A lightweight bash framework for clean CLI tools with parameters, validation, output formatting, and auto-completion.
 
-## Quick Start
+## Setup
+
+**Requirements:** [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ```bash
-# Source the framework
-source src/init.bash
+# Clone and run setup (creates ~/.grim/, installs Python deps)
+bash setup.bash
+
+# Add to ~/.bashrc
+source /path/to/grim/src/init.bash
 ```
+
+`setup.bash` will create `~/.grim/config.env` from the example if it doesn't exist yet. Edit it to configure your environment.
 ## Hello World Example
 
 ```bash
@@ -74,25 +81,35 @@ greet --output_format raw --name World  # raw command output
 
 ## Configuration
 
-Create `.env`:
+Edit `~/.grim/config.env` (created by `setup.bash`):
 ```bash
-cp example.env .env
-# Edit with your values
+AZURE_DEVOPS_ORGANIZATION="my-org"
+AZURE_DEVOPS_FEED_NAME="my-feed"
+AZURE_SUBSCRIPTIONS="sub1 sub2"
 ```
 
-All `.env*` files are sourced automatically on init.
+See `config.env.example` for all available options.
 
 ## Project Structure
 
 ```
+setup.bash              — one-time setup
+config.env.example      — configuration template
+pyproject.toml          — Python dependencies (managed by uv)
 src/
-├── init.bash
-├── grim/
+├── init.bash           — source this in .bashrc
+├── grim/               — framework utilities
 │   ├── command.bash
 │   ├── message.bash
 │   └── output.bash
-└── <namespace>/
-    ├── module1.bash
-    └── module2.bash
+└── <namespace>/        — command modules
+    ├── module.bash
+    ├── kql/            — KQL query files
+    └── python/         — Python scripts
+~/.grim/
+├── config.env          — your configuration
+├── kql/                — user-defined KQL queries (override repo queries)
+└── *.bash              — user-defined command extensions
 ```
-Add new modules in `src/<namespace>/` — they load automatically when sourced via `src/init.bash`. Functions are named `<namespace>_<module>_<action>`, e.g. `nmap_scan_full`, `openssl_file_encrypt`.
+
+Add new modules in `src/<namespace>/` — they load automatically. Functions are named `<namespace>_<module>_<action>`, e.g. `nmap_scan_full`, `azure_graph_query`.
