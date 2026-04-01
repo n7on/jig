@@ -98,6 +98,11 @@ _grim_command_exec_python() {
     local script="$2"
     shift 2
 
+    if [[ ! -x "$_GRIM_PYTHON" ]]; then
+        _grim_message_error "Python venv not found. Run setup.bash first."
+        return 1
+    fi
+
     local script_path="$_GRIM_DIR/src/$namespace/python/$script"
     if [[ ! -f "$script_path" ]]; then
         _grim_message_error "Python script not found: $script_path"

@@ -4,6 +4,7 @@ _azure_arm_get_subscriptions() {
 }
 
 azure_arm_subscription() {
+    _grim_command_requires az || return 1
     _grim_command_description "Switch Azure subscription"
     _grim_command_param subscription --required --positional --regex "[^0-9]" --help "Subscription name"
     _grim_command_param_parse "$@" || return 1

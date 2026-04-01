@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import os
 import sys
 
 import openpyxl
@@ -10,24 +11,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Convert TSV to Excel")
-    parser.add_argument("--output", required=True, help="Output .xlsx file path")
-    args = parser.parse_args()
-
-    reader = csv.reader(sys.stdin, delimiter="\t")
-    rows = list(reader)
-
-    if not rows:
-        print("No input data", file=sys.stderr)
-        sys.exit(1)
-
-    headers = rows[0]
-    data = rows[1:]
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-
+def write_sheet(ws, headers, data):
     header_font = Font(bold=True, color="FFFFFF")
     header_fill = PatternFill(fill_type="solid", fgColor="2E4057")
     header_alignment = Alignment(horizontal="left", vertical="center")
@@ -46,7 +30,6 @@ def main():
             if row_idx % 2 == 0:
                 cell.fill = alt_fill
 
-    # Auto-fit column widths based on content
     for col_idx, header in enumerate(headers, start=1):
         col_values = [header] + [
             str(row[col_idx - 1]) if col_idx - 1 < len(row) else ""
@@ -57,6 +40,35 @@ def main():
 
     ws.freeze_panes = "A2"
 
+
+def main():
+    parser = argparse.ArgumentParser(description="Convert TSV to Excel")
+    parser.add_argument("--output", required=True, help="Output .xlsx file path")
+    parser.add_argument("--sheet", default="Sheet1", help="Sheet name")
+    args = parser.parse_args()
+
+    reader = csv.reader(sys.stdin, delimiter="\t")
+    rows = list(reader)
+
+    if not rows:
+        print("No input data", file=sys.stderr)
+        sys.exit(1)
+
+    headers = rows[0]
+    data = rows[1:]
+
+    if os.path.exists(args.output):
+        wb = openpyxl.load_workbook(args.output)
+        if args.sheet in wb.sheetnames:
+            print(f"Sheet '{args.sheet}' already exists in {args.output}", file=sys.stderr)
+            sys.exit(1)
+        ws = wb.create_sheet(title=args.sheet)
+    else:
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = args.sheet
+
+    write_sheet(ws, headers, data)
     wb.save(args.output)
 
 
