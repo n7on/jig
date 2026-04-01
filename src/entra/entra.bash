@@ -32,5 +32,26 @@ entra_license() {
     echo "$result" | _grim_command_output_render
 }
 
+entra_license_plan_list() {
+    _grim_command_requires az jq || return 1
+    _grim_command_description "List service plans across all subscribed Entra SKUs"
+    _grim_command_param sku    --help "Filter by SKU name (partial match)"
+    _grim_command_param status --help "Filter by provisioning status (e.g. Success, Disabled)"
+    _grim_command_param_parse "$@" || return 1
+
+    local result
+    result=$(_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
+
+    [[ -n "$sku" ]]    && result=$(jq --arg v "$sku"    '[.[] | select(.skuPartNumber | ascii_downcase | contains($v | ascii_downcase))]' <<< "$result")
+    [[ -n "$status" ]] && result=$(jq --arg v "$status" '[.[] | select(.servicePlans[].provisioningStatus | ascii_downcase == ($v | ascii_downcase))]' <<< "$result")
+
+    _grim_command_output_set "SKU,PLAN,STATUS,APPLIES_TO" \
+        '.[] | . as $sku | .servicePlans[] | [$sku.skuPartNumber, .servicePlanName, .provisioningStatus, .appliesTo] | @tsv' jq
+
+    echo "$result" | _grim_command_output_render
+}
+
 # Register completions
 _grim_command_complete_params "entra_license"
+_grim_command_complete_params "entra_license_plan_list" "sku" "status"
+_grim_command_complete_values "entra_license_plan_list" "status" "Success" "Disabled" "PendingInput" "PendingProvisioning"
