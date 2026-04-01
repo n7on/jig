@@ -118,7 +118,7 @@ _grim_command_run() {
     local stderr_file
     stderr_file=$(mktemp)
 
-    "$@" 2>"$stderr_file" | _grim_command_output_render
+    _grim_cache_wrap "$@" 2>"$stderr_file" | _grim_command_output_render
 
     local rc=${PIPESTATUS[0]}
 
@@ -158,7 +158,7 @@ _grim_command_exec_python() {
     local stderr_file
     stderr_file=$(mktemp)
 
-    "$_GRIM_PYTHON" "$script_path" "$@" 2>"$stderr_file"
+    _grim_cache_wrap "$_GRIM_PYTHON" "$script_path" "$@" 2>"$stderr_file"
 
     local rc=$?
 
@@ -183,7 +183,7 @@ _grim_command_exec() {
     local stderr_file
     stderr_file=$(mktemp)
 
-    "$@" 2>"$stderr_file"
+    _grim_cache_wrap "$@" 2>"$stderr_file"
 
     local rc=$?
 
@@ -372,6 +372,8 @@ _grim_command_complete_params() {
     _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
     _GRIM_COMMAND_FLAGS["${func}:output_format"]="table"
     _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table tsv raw"
+    _GRIM_COMMAND_PARAMS["${func}:cache"]=1
+    _GRIM_COMMAND_HELP["${func}:cache"]="Cache TTL in seconds (0 to disable)"
     _GRIM_COMMAND_PARAMS["${func}:help"]=1
 
     for param in "$@"; do
