@@ -4,16 +4,16 @@ entra_app_list() {
     _grim_command_param_parse "$@" || return 1
 
     local apps
-    apps=$(az ad app list --all --output json 2>/dev/null) || {
+    apps=$(_grim_command_exec az ad app list --all --output json) || {
         _grim_message_error "Failed to list app registrations"
         return 1
     }
 
     # Build permission GUID -> name map from Microsoft Graph (delegated + app roles)
     local graph_sp
-    graph_sp=$(az ad sp show --id "00000003-0000-0000-c000-000000000000" \
+    graph_sp=$(_grim_command_exec az ad sp show --id "00000003-0000-0000-c000-000000000000" \
         --query "{scopes:oauth2PermissionScopes[].{id:id,value:value},roles:appRoles[].{id:id,value:value}}" \
-        --output json 2>/dev/null) || {
+        --output json) || {
         _grim_message_error "Failed to fetch Microsoft Graph permissions"
         return 1
     }

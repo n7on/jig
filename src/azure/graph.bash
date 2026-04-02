@@ -54,7 +54,7 @@ azure_graph_query() {
     fi
 
     local result
-    result=$("${cmd[@]}" 2>/dev/null) || { _grim_message_error "Graph query failed"; return 1; }
+    result=$(_grim_command_exec "${cmd[@]}") || { _grim_message_error "Graph query failed"; return 1; }
 
     _grim_command_output_set "NAME,RESOURCE_GROUP,LOCATION,KIND,SUBSCRIPTION_ID" \
         '.data[] | [.name, .resourceGroup, .location, (.kind // "-"), .subscriptionId] | @tsv' jq

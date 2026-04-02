@@ -5,7 +5,11 @@ _GRIM_CACHE_DIR="${HOME}/.grim/.cache"
 # Usage: _grim_cache_key "func_name" "arg1" "arg2"
 _grim_cache_key() {
     local IFS=$'\x1f'
-    echo -n "$*" | md5
+    if command -v md5sum &>/dev/null; then
+        echo -n "$*" | md5sum | cut -d' ' -f1
+    else
+        echo -n "$*" | md5
+    fi
 }
 
 # Wrap a command with caching support
@@ -48,7 +52,7 @@ _grim_cache_wrap() {
     output=$("$@")
     rc=$?
 
-    if [[ -n "$output" ]]; then
+    if [[ $rc -eq 0 && -n "$output" ]]; then
         echo "$output" > "$cache_file"
     fi
     echo "$output"

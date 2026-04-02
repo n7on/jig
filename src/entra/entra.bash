@@ -24,7 +24,7 @@ entra_license() {
     _grim_command_param_parse "$@" || return 1
 
     local result
-    result=$(_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
+    result=$(_grim_command_exec _entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
 
     _grim_command_output_set "SKU,CONSUMED,ENABLED,STATUS" \
         '.[] | [.skuPartNumber, (.consumedUnits | tostring), (.prepaidUnits.enabled | tostring), .capabilityStatus] | @tsv' jq
@@ -40,7 +40,7 @@ entra_license_plan_list() {
     _grim_command_param_parse "$@" || return 1
 
     local result
-    result=$(_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
+    result=$(_grim_command_exec _entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
 
     [[ -n "$sku" ]]    && result=$(jq --arg v "$sku"    '[.[] | select(.skuPartNumber | ascii_downcase | contains($v | ascii_downcase))]' <<< "$result")
     [[ -n "$status" ]] && result=$(jq --arg v "$status" '[.[] | select(.servicePlans[].provisioningStatus | ascii_downcase == ($v | ascii_downcase))]' <<< "$result")

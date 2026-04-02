@@ -23,7 +23,7 @@ ado_feed_list() {
     local url="https://feeds.dev.azure.com/$organization/_apis/packaging/feeds?api-version=7.1-preview.1"
 
     local result
-    result=$(az rest --method GET --resource "$_ado_app_id" --url "$url" 2>/dev/null) || {
+    result=$(_grim_command_exec az rest --method GET --resource "$_ado_app_id" --url "$url") || {
         _grim_message_error "Failed to fetch feeds for organization '$organization'"
         return 1
     }
@@ -44,7 +44,7 @@ ado_feed_package_list() {
     local url="https://feeds.dev.azure.com/$organization/_apis/packaging/feeds/$feed/packages?protocolType=upack&api-version=7.1-preview.1"
 
     local result
-    result=$(az rest --method GET --resource "$_ado_app_id" --url "$url" 2>/dev/null) || {
+    result=$(_grim_command_exec az rest --method GET --resource "$_ado_app_id" --url "$url") || {
         _grim_message_error "Failed to fetch packages from feed '$feed'"
         return 1
     }

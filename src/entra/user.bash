@@ -8,9 +8,9 @@ entra_user_list() {
     [[ -n "$filter" ]] && user_url+="&\$filter=$(jq -rn --arg s "$filter" '$s | @uri')"
 
     local skus users mfa
-    skus=$(_entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
-    users=$(_entra_get_all "$user_url") || return 1
-    mfa=$(_entra_get_all "https://graph.microsoft.com/v1.0/reports/authenticationMethods/userRegistrationDetails?\$select=userPrincipalName,isMfaRegistered") || return 1
+    skus=$(_grim_command_exec _entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
+    users=$(_grim_command_exec _entra_get_all "$user_url") || return 1
+    mfa=$(_grim_command_exec _entra_get_all "https://graph.microsoft.com/v1.0/reports/authenticationMethods/userRegistrationDetails?\$select=userPrincipalName,isMfaRegistered") || return 1
 
     local result
     result=$(jq -rn \

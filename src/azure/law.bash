@@ -22,7 +22,7 @@ _azure_law_get_query_names() {
 
 _azure_law_get_workspaces() {
     local workspaces
-    workspaces=$(az monitor log-analytics workspace list --query "[].name" -o tsv 2>/dev/null)
+    workspaces=$(_grim_cache_wrap 300 az monitor log-analytics workspace list --query "[].name" -o tsv 2>/dev/null)
     _grim_command_complete_filter "$workspaces" "$1"
 }
 
@@ -55,16 +55,38 @@ azure_law_query() {
     local kql
     kql=$(_azure_law_load_query "$name") || return 1
 
+    # Resolve workspace name to customer ID (GUID)
+    local workspace_id
+    workspace_id=$(_grim_command_exec az monitor log-analytics workspace list \
+        --query "[?name=='$workspace'].customerId | [0]" -o tsv)
+    if [[ -z "$workspace_id" ]]; then
+        _grim_message_error "Workspace '$workspace' not found"
+        return 1
+    fi
+
     local result
-    result=$(az monitor log-analytics query \
-        --workspace "$workspace" \
+    result=$(_grim_command_exec az monitor log-analytics query \
+        --workspace "$workspace_id" \
         --analytics-query "$kql" \
         --timespan "$timespan" \
-        --output json 2>/dev/null) || { _grim_message_error "Log Analytics query failed"; return 1; }
+        --output json) || { _grim_message_error "Log Analytics query failed"; return 1; }
 
     local columns rows
-    columns=$(jq -r '[.tables[0].columns[].name | ascii_upcase] | join(",")' <<< "$result")
-    rows=$(jq -r '.tables[0].rows[] | map(. // "" | tostring) | @tsv' <<< "$result")
+    if jq -e 'type == "array"' <<< "$result" &>/dev/null; then
+        # New az CLI format: array of objects
+        if jq -e 'length == 0' <<< "$result" &>/dev/null; then
+            _grim_message_warn "No results found"
+            return 0
+        fi
+        local keys
+        keys=$(jq -c '[.[0] | keys_unsorted[]]' <<< "$result")
+        columns=$(jq -r '[.[0] | keys_unsorted[] | ascii_upcase] | join(",")' <<< "$result")
+        rows=$(jq -r --argjson keys "$keys" '.[] | [.[$keys[]]] | map(. // "" | tostring) | @tsv' <<< "$result")
+    else
+        # Old format: tables structure
+        columns=$(jq -r '[.tables[0].columns[].name | ascii_upcase] | join(",")' <<< "$result")
+        rows=$(jq -r '.tables[0].rows[] | map(. // "" | tostring) | @tsv' <<< "$result")
+    fi
 
     _grim_command_output_set "$columns" '{print}' awk
     echo "$rows" | _grim_command_output_render
@@ -72,5 +94,6 @@ azure_law_query() {
 
 # Register completions
 _grim_command_complete_params "azure_law_query" "name" "workspace" "timespan"
+_grim_command_complete_values "azure_law_query" "timespan" "PT1H" "PT6H" "PT12H" "P1D" "P3D" "P7D" "P14D" "P30D"
 _grim_command_complete_func "azure_law_query" "name" _azure_law_get_query_names
 _grim_command_complete_func "azure_law_query" "workspace" _azure_law_get_workspaces
