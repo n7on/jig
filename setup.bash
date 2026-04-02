@@ -25,7 +25,7 @@ fi
 # Create/update virtualenv and install Python dependencies
 echo "Installing Python dependencies..."
 python3 -m venv "$_GRIM_DIR/.venv"
-"$_GRIM_DIR/.venv/bin/pip" install --quiet "$_GRIM_DIR"
+"$_GRIM_DIR/.venv/bin/pip" install --quiet --disable-pip-version-check "$_GRIM_DIR"
 
 echo ""
 echo "Setup complete. Add the following line to your .bashrc:"
