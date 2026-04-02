@@ -9,6 +9,7 @@ declare -gA _GRIM_COMMAND_REGEX
 declare -gA _GRIM_COMMAND_PATH
 declare -gA _GRIM_COMMAND_HELP
 declare -gA _GRIM_COMMAND_DESCRIPTION
+declare -gA _GRIM_COMMAND_DEFAULTS
 
 # Get the config file path for a namespace/module
 # Usage: _grim_command_config_file azure ado
@@ -218,7 +219,7 @@ _grim_command_param() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --default) _GRIM_COMMAND_FLAGS["${func}:${param}"]="$2"; shift ;;
+            --default) _GRIM_COMMAND_FLAGS["${func}:${param}"]="$2"; _GRIM_COMMAND_DEFAULTS["${func}:${param}"]="$2"; shift ;;
             --required) _GRIM_COMMAND_REQUIRED["${func}:${param}"]=1 ;;
             --positional) _GRIM_COMMAND_POSITIONAL["$func"]="$param" ;;
             --regex) _GRIM_COMMAND_REGEX["${func}:${param}"]="$2"; shift ;;
@@ -262,12 +263,17 @@ _grim_command_param_parse() {
     fi
 
     # Store parsed flags and export to caller's scope
+    # Reset all flags first to avoid stale values from previous calls
     local exports=""
     for key in "${!_GRIM_COMMAND_PARAMS[@]}"; do
         [[ "$key" == "${func}:"* ]] || continue
         local param_name="${key##*:}"
         local flag_name="--${param_name}"
-        [[ -v flags[$flag_name] ]] && _GRIM_COMMAND_FLAGS["${func}:${param_name}"]="${flags[$flag_name]}"
+        if [[ -v flags[$flag_name] ]]; then
+            _GRIM_COMMAND_FLAGS["${func}:${param_name}"]="${flags[$flag_name]}"
+        else
+            _GRIM_COMMAND_FLAGS["${func}:${param_name}"]="${_GRIM_COMMAND_DEFAULTS[${func}:${param_name}]:-}"
+        fi
         local value="${_GRIM_COMMAND_FLAGS[${func}:${param_name}]:-}"
         exports+="$param_name=\"$value\"; "
     done
@@ -371,9 +377,18 @@ _grim_command_complete_params() {
     # Default parameters for all commands
     _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
     _GRIM_COMMAND_FLAGS["${func}:output_format"]="table"
+    _GRIM_COMMAND_DEFAULTS["${func}:output_format"]="table"
     _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table tsv raw"
     _GRIM_COMMAND_PARAMS["${func}:cache"]=1
     _GRIM_COMMAND_HELP["${func}:cache"]="Cache TTL in seconds (0 to disable)"
+    _GRIM_COMMAND_PARAMS["${func}:filter"]=1
+    _GRIM_COMMAND_HELP["${func}:filter"]="Filter rows (COLUMN=value, supports wildcards)"
+    _GRIM_COMMAND_PARAMS["${func}:sort"]=1
+    _GRIM_COMMAND_HELP["${func}:sort"]="Sort by column (prefix with - for descending)"
+    _GRIM_COMMAND_PARAMS["${func}:select"]=1
+    _GRIM_COMMAND_HELP["${func}:select"]="Comma-separated list of columns to include"
+    _GRIM_COMMAND_PARAMS["${func}:limit"]=1
+    _GRIM_COMMAND_HELP["${func}:limit"]="Limit output to first N rows"
     _GRIM_COMMAND_PARAMS["${func}:help"]=1
 
     for param in "$@"; do

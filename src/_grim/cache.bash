@@ -1,9 +1,10 @@
 # Cache management for grim commands
-_GRIM_CACHE_DIR="${HOME}/.grim/cache"
+_GRIM_CACHE_DIR="${HOME}/.grim/.cache"
 
 # Generate a cache key from arguments
 # Usage: _grim_cache_key "func_name" "arg1" "arg2"
 _grim_cache_key() {
+    local IFS=$'\x1f'
     echo -n "$*" | md5
 }
 
