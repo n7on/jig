@@ -15,7 +15,7 @@ _ado_get_packages() {
 }
 
 ado_feed_list() {
-    _grim_command_requires az jq || return 1
+    _grim_command_requires az || return 1
     _grim_command_description "List Azure DevOps feeds"
     _grim_command_param organization --default "$(_grim_command_config_get ado config organization)" --help "Azure DevOps organization"
     _grim_command_param_parse "$@" || return 1
@@ -29,12 +29,12 @@ ado_feed_list() {
     }
 
     echo "$result" \
-        | jq -r '.value[] | [.name, .id] | @tsv' \
-        | _grim_command_output_render "NAME,ID"
+        | _grim_extract --json '.value[]' 'name=.name' 'id=.id' \
+        | _grim_command_output_render
 }
 
 ado_feed_package_list() {
-    _grim_command_requires az jq || return 1
+    _grim_command_requires az || return 1
     _grim_command_description "List packages in an Azure DevOps feed"
     _grim_command_param feed         --required --help "Feed name"
     _grim_command_param organization --default "$(_grim_command_config_get ado config organization)" --help "Azure DevOps organization"
@@ -49,12 +49,12 @@ ado_feed_package_list() {
     }
 
     echo "$result" \
-        | jq -r '.value[] | [.name, .versions[0].version] | @tsv' \
-        | _grim_command_output_render "NAME,VERSION"
+        | _grim_extract --json '.value[]' 'name=.name' 'version=.versions[0].version' \
+        | _grim_command_output_render
 }
 
 ado_feed_package_download() {
-    _grim_command_requires az jq || return 1
+    _grim_command_requires az || return 1
     _grim_command_description "Download latest package from Azure DevOps feed"
     _grim_command_param package      --required --positional --help "Package name"
     _grim_command_param path         --default "." --help "Download path"
@@ -64,17 +64,15 @@ ado_feed_package_download() {
 
     local url="https://feeds.dev.azure.com/$organization/_apis/packaging/feeds/$feed/packages?packageNameQuery=$package&protocolType=upack&api-version=7.1-preview.1"
 
-    local pkg
-    pkg=$(az rest --method GET --resource "$_ado_app_id" --url "$url" 2>/dev/null | \
-        jq -r --arg name "$package" '.value[] | select(.name == $name)') || {
+    local result
+    result=$(az rest --method GET --resource "$_ado_app_id" --url "$url" 2>/dev/null) || {
         _grim_message_error "Failed to fetch package '$package' from feed '$feed'"
         return 1
     }
 
-    [[ -z "$pkg" ]] && { _grim_message_error "Package '$package' not found in feed '$feed'"; return 1; }
-
     local version
-    version=$(jq -r '.versions[0].version' <<< "$pkg")
+    version=$(echo "$result" | _grim_json_tsv 'value' 'name' 'version=versions.0.version' | awk -F'\t' -v n="$package" '$1==n{print $2}')
+    [[ -z "$version" ]] && { _grim_message_error "Package '$package' not found in feed '$feed'"; return 1; }
 
     az artifacts universal download \
         --organization "https://dev.azure.com/$organization/" \

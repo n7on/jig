@@ -4,7 +4,7 @@
 # Usage: echo "$tsv_data" | _grim_command_output_render "COL1,COL2,COL3"
 
 _grim_command_output_render() {
-    local headers="$1"
+    local headers="${1:-}"
     local format="${output_format:-table}"
 
     if [[ "$format" == "raw" ]]; then
@@ -19,6 +19,12 @@ _grim_command_output_render() {
 
     local data
     data=$(cat)
+
+    # If no headers argument, read from first line of data
+    if [[ -z "$headers" ]]; then
+        headers="${data%%$'\n'*}"
+        data="${data#*$'\n'}"
+    fi
 
     if [[ -z "$data" ]]; then
         _grim_message_warn "No results found"

@@ -19,7 +19,6 @@ _note_git_push() {
 
 # Add a new note for today
 note_add() {
-    _grim_command_requires jq || return 1
     _grim_command_description "Add a new note for today"
     _grim_command_param message --positional --required --help "The note text, supports #tags"
     _grim_command_param_parse "$@" || return 1
@@ -38,19 +37,9 @@ note_add() {
     timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     local new_note
-    new_note=$(jq -n \
-        --arg id "$id" \
-        --arg message "$message" \
-        --arg timestamp "$timestamp" \
-        '{id: $id, message: $message, timestamp: $timestamp}')
+    new_note=$(_grim_json_build "id=$id" "message=$message" "timestamp=$timestamp")
 
-    if [[ -f "$file" ]]; then
-        local updated
-        updated=$(jq --argjson note "$new_note" '. + [$note]' "$file") || return 1
-        echo "$updated" > "$file"
-    else
-        echo "[$new_note]" | jq . > "$file"
-    fi
+    _grim_command_exec_python note add_note.py "$file" "$new_note"
 
     _note_git_push "add note $id"
 
@@ -59,7 +48,6 @@ note_add() {
 
 # List notes for a given date (defaults to today)
 note_list() {
-    _grim_command_requires jq || return 1
     _grim_command_description "List notes for a given date"
     _grim_command_param date --default "$(date +%Y-%m-%d)" --positional --help "Date to list notes for"
     _grim_command_param_parse "$@" || return 1
@@ -73,13 +61,13 @@ note_list() {
         return 0
     fi
 
-    jq -r '.[] | [.id, .timestamp, .message] | @tsv' "$file" \
-        | _grim_command_output_render "ID,TIMESTAMP,MESSAGE"
+    cat "$file" \
+        | _grim_json_tsv '.' 'id' 'timestamp' 'message' \
+        | _grim_command_output_render
 }
 
 # Delete a note by id
 note_delete() {
-    _grim_command_requires jq || return 1
     _grim_command_description "Delete a note by id"
     _grim_command_param id --positional --required --help "The note id to delete"
     _grim_command_param_parse "$@" || return 1
@@ -91,16 +79,7 @@ note_delete() {
     for file in "$_NOTE_DIR"/*.json; do
         [[ -f "$file" ]] || continue
 
-        if jq -e --arg id "$id" 'map(select(.id == $id)) | length > 0' "$file" &>/dev/null; then
-            local updated
-            updated=$(jq --arg id "$id" 'map(select(.id != $id))' "$file")
-
-            if [[ $(echo "$updated" | jq 'length') -eq 0 ]]; then
-                rm "$file"
-            else
-                echo "$updated" > "$file"
-            fi
-
+        if _grim_command_exec_python note delete_note.py "$file" "$id" 2>/dev/null; then
             found=1
             break
         fi

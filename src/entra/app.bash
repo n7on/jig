@@ -29,7 +29,7 @@ entra_app_list() {
                 $permMap[.id] // .id
             ] | join(","))
         ] | @tsv
-    ' <<< "$apps" | _grim_command_output_render "NAME,CLIENT_ID,PERMISSIONS"
+    ' <<< "$apps" | _grim_command_output_render "name,client_id,permissions"
 }
 
 entra_permission_list() {
@@ -58,7 +58,7 @@ entra_permission_list() {
         | @tsv
     ' <<< "$graph_sp" \
         | sort \
-        | _grim_command_output_render "PERMISSION,TYPE,DESCRIPTION"
+        | _grim_command_output_render "permission,type,description"
 }
 
 _grim_command_complete_params entra_app_list

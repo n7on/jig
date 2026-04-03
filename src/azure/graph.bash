@@ -38,7 +38,7 @@ _azure_graph_load_query() {
 }
 
 azure_graph_query() {
-    _grim_command_requires az jq || return 1
+    _grim_command_requires az || return 1
     _grim_command_description "Query Azure Resource Graph using a saved KQL file"
     _grim_command_param name          --required --positional --help "Query name (from queries/graph/)"
     _grim_command_param subscriptions --help "Comma-separated list of subscription IDs to scope the query"
@@ -57,8 +57,13 @@ azure_graph_query() {
     result=$(_grim_command_exec "${cmd[@]}") || { _grim_message_error "Graph query failed"; return 1; }
 
     echo "$result" \
-        | jq -r '.data[] | [.name, .resourceGroup, .location, (.kind // "-"), .subscriptionId] | @tsv' \
-        | _grim_command_output_render "NAME,RESOURCE_GROUP,LOCATION,KIND,SUBSCRIPTION_ID"
+        | _grim_json_tsv 'data' \
+            'name' \
+            'resource_group=resourceGroup' \
+            'location' \
+            'kind' \
+            'subscription_id=subscriptionId' \
+        | _grim_command_output_render
 }
 
 # Register completions

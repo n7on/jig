@@ -30,7 +30,7 @@ entra_user_list() {
         ] | @tsv
     ') || return 1
 
-    echo "$result" | _grim_command_output_render "NAME,UPN,ACCOUNT,MFA,LICENSES"
+    echo "$result" | _grim_command_output_render "name,upn,account,mfa,licenses"
 }
 
 _grim_command_complete_params "entra_user_list" "filter"

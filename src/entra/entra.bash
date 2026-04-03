@@ -19,7 +19,7 @@ _entra_get_all() {
 }
 
 entra_license() {
-    _grim_command_requires az jq || return 1
+    _grim_command_requires az || return 1
     _grim_command_description "List Entra license information"
     _grim_command_param_parse "$@" || return 1
 
@@ -27,8 +27,12 @@ entra_license() {
     result=$(_grim_command_exec _entra_get_all "https://graph.microsoft.com/v1.0/subscribedSkus") || return 1
 
     echo "$result" \
-        | jq -r '.[] | [.skuPartNumber, (.consumedUnits | tostring), (.prepaidUnits.enabled | tostring), .capabilityStatus] | @tsv' \
-        | _grim_command_output_render "SKU,CONSUMED,ENABLED,STATUS"
+        | _grim_json_tsv '.' \
+            'sku=skuPartNumber' \
+            'consumed=consumedUnits' \
+            'enabled=prepaidUnits.enabled' \
+            'status=capabilityStatus' \
+        | _grim_command_output_render
 }
 
 entra_license_plan_list() {
@@ -46,7 +50,7 @@ entra_license_plan_list() {
 
     echo "$result" \
         | jq -r '.[] | . as $sku | .servicePlans[] | [$sku.skuPartNumber, .servicePlanName, .provisioningStatus, .appliesTo] | @tsv' \
-        | _grim_command_output_render "SKU,PLAN,STATUS,APPLIES_TO"
+        | _grim_command_output_render "sku,plan,status,applies_to"
 }
 
 # Register completions

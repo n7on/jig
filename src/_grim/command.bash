@@ -40,7 +40,7 @@ _grim_command_config_get() {
     local config_file
     config_file=$(_grim_command_config_file "$1" "$2")
     [[ -f "$config_file" ]] || return 0
-    jq -r --arg key "$3" '.[$key] // empty' "$config_file" 2>/dev/null
+    cat "$config_file" | _grim_json_get "$3" 2>/dev/null
 }
 
 # Write a key/value to a module config file
@@ -53,7 +53,7 @@ _grim_command_config_set() {
         return 1
     fi
     local updated
-    updated=$(jq --arg key "$3" --arg val "$4" '.[$key] = $val' "$config_file") || return 1
+    updated=$("$_GRIM_PYTHON" "$_GRIM_DIR/src/_grim/python/config_set.py" "$config_file" "$3" "$4") || return 1
     echo "$updated" > "$config_file"
 }
 

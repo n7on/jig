@@ -6,7 +6,7 @@ Usage: echo "$data" | python3 render.py [options]
 Options:
   --headers COL1,COL2,...   Column headers (required)
   --format  table|json|tsv  Output format (default: table)
-  --filter  COL=value       Filter rows (supports * wildcards)
+  --filter  COL=value       Filter rows (= for exact/wildcard, ~ for contains)
   --sort    [-]COL          Sort by column (prefix - for descending)
   --select  COL1,COL3       Select subset of columns
   --limit   N               Limit to first N rows
@@ -85,12 +85,22 @@ def parse_rows(text: str, n_cols: int) -> list[list[str]]:
 
 
 def filter_rows(headers: list[str], rows: list[list[str]], expr: str) -> list[list[str]]:
-    col, _, pattern = expr.partition("=")
-    idx = resolve_column(headers, col)
-    if idx < 0:
-        print(f"Unknown filter column: {col} (available: {','.join(headers)})", file=sys.stderr)
-        return rows
-    return [r for r in rows if fnmatch.fnmatch(r[idx], pattern)]
+    # ~ for case-insensitive contains, = for exact/wildcard match
+    if "~" in expr:
+        col, _, pattern = expr.partition("~")
+        idx = resolve_column(headers, col)
+        if idx < 0:
+            print(f"Unknown filter column: {col} (available: {','.join(headers)})", file=sys.stderr)
+            return rows
+        pattern_lower = pattern.lower()
+        return [r for r in rows if pattern_lower in r[idx].lower()]
+    else:
+        col, _, pattern = expr.partition("=")
+        idx = resolve_column(headers, col)
+        if idx < 0:
+            print(f"Unknown filter column: {col} (available: {','.join(headers)})", file=sys.stderr)
+            return rows
+        return [r for r in rows if fnmatch.fnmatch(r[idx], pattern)]
 
 
 def sort_rows(headers: list[str], rows: list[list[str]], expr: str) -> list[list[str]]:

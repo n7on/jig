@@ -16,7 +16,7 @@ openssl_client_connect() {
                /notBefore=/{sub(/.*notBefore=/, ""); nb=$0}
                /notAfter=/{sub(/.*notAfter=/, ""); na=$0}
                /END CERTIFICATE/{printf "%s\t%s\t%s\t%s\n", subj, iss, nb, na}' \
-        | _grim_command_output_render "SUBJECT,ISSUER,NOTBEFORE,NOTAFTER"
+        | _grim_command_output_render "subject,issuer,notbefore,notafter"
 }
 
 _openssl_complete_messages() {

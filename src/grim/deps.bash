@@ -19,7 +19,7 @@ grim_deps() {
             | grep -v '^$' \
             | sort -u \
             | while IFS= read -r ext; do printf "%s\taz-extension\n" "$ext"; done
-    } | sort -u | _grim_command_output_render "DEPENDENCY,TYPE"
+    } | sort -u | _grim_command_output_render "dependency,type"
 }
 
 _grim_command_complete_params grim_deps

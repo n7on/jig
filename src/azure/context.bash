@@ -15,7 +15,6 @@ _azure_context_get_names() {
 }
 
 azure_context_list() {
-    _grim_command_requires jq || return 1
     _grim_command_description "List available Azure contexts"
     _grim_command_param_parse "$@" || return 1
 
@@ -28,11 +27,11 @@ azure_context_list() {
             [[ -d "$dir" ]] || continue
             local name user active="-"
             name=$(basename "$dir")
-            user=$(jq -r '.subscriptions[0].user.name // "-"' "$dir/azureProfile.json" 2>/dev/null || echo "-")
+            user=$(cat "$dir/azureProfile.json" 2>/dev/null | _grim_json_get 'subscriptions.0.user.name' 2>/dev/null || echo "-")
             [[ "$name" == "$current" ]] && active="*"
             printf "%s\t%s\t%s\n" "$name" "$user" "$active"
         done
-    } | _grim_command_output_render "NAME,USER,ACTIVE"
+    } | _grim_command_output_render "name,user,active"
 }
 
 azure_context_add() {

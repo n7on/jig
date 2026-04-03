@@ -6,8 +6,8 @@ nmap_scan_quick() {
     _grim_command_param_parse "$@" || return 1
 
     _grim_command_exec nmap -T4 --top-ports 1000 "$target" \
-        | awk '/^[0-9]+\//{printf "%s\t%s\t%s\n", $1, $2, $3}' \
-        | _grim_command_output_render "PORT,STATE,SERVICE"
+        | _grim_extract --text '/^[0-9]+\//' 'port=$1' 'state=$2' 'service=$3' \
+        | _grim_command_output_render
 }
 
 # Full port scan (all 65535 ports)
@@ -18,8 +18,8 @@ nmap_scan_full() {
     _grim_command_param_parse "$@" || return 1
 
     _grim_command_exec nmap -T4 -p- "$target" \
-        | awk '/^[0-9]+\//{printf "%s\t%s\t%s\n", $1, $2, $3}' \
-        | _grim_command_output_render "PORT,STATE,SERVICE"
+        | _grim_extract --text '/^[0-9]+\//' 'port=$1' 'state=$2' 'service=$3' \
+        | _grim_command_output_render
 }
 
 # Service and version detection
@@ -35,7 +35,7 @@ nmap_scan_services() {
 
     _grim_command_exec "${cmd[@]}" \
         | awk '/^[0-9]+\//{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}' \
-        | _grim_command_output_render "PORT,STATE,SERVICE,VERSION"
+        | _grim_command_output_render "port,state,service,version"
 }
 
 # OS detection (requires root)
@@ -54,7 +54,7 @@ nmap_scan_os() {
             gsub(/^[ \t]+|[ \t]+$/, "", val)
             print a[1] "\t" val
         }' \
-        | _grim_command_output_render "TYPE,DETAILS"
+        | _grim_command_output_render "type,details"
 }
 
 # Network discovery (ping sweep)
@@ -66,7 +66,7 @@ nmap_scan_discover() {
 
     _grim_command_exec nmap -sn "$subnet" \
         | awk '/Nmap scan report for/{host=$5} /Host is up/{printf "%s\t%s\n", host, "up"}' \
-        | _grim_command_output_render "HOST,STATUS"
+        | _grim_command_output_render "host,status"
 }
 
 # Stealth SYN scan
@@ -81,8 +81,8 @@ nmap_scan_stealth() {
     [[ -n "$ports" ]] && cmd+=(-p "$ports")
 
     _grim_command_exec "${cmd[@]}" \
-        | awk '/^[0-9]+\//{printf "%s\t%s\t%s\n", $1, $2, $3}' \
-        | _grim_command_output_render "PORT,STATE,SERVICE"
+        | _grim_extract --text '/^[0-9]+\//' 'port=$1' 'state=$2' 'service=$3' \
+        | _grim_command_output_render
 }
 
 # UDP scan
@@ -94,8 +94,8 @@ nmap_scan_udp() {
     _grim_command_param_parse "$@" || return 1
 
     _grim_command_exec sudo nmap -sU -p "$ports" "$target" \
-        | awk '/^[0-9]+\//{printf "%s\t%s\t%s\n", $1, $2, $3}' \
-        | _grim_command_output_render "PORT,STATE,SERVICE"
+        | _grim_extract --text '/^[0-9]+\//' 'port=$1' 'state=$2' 'service=$3' \
+        | _grim_command_output_render
 }
 
 _nmap_complete_targets() {
