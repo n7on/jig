@@ -343,16 +343,19 @@ _grim_command_show_help() {
 
 # Register parameters for completion (called at file scope)
 # Automatically includes output_format and help as default parameters
-# Usage: _grim_command_complete_params "my_func" "target" "ports"
+# Usage: _grim_command_complete_params "my_func" "Description text" "target" "ports"
 _grim_command_complete_params() {
     local func="$1"
-    shift
+    local desc="$2"
+    shift 2
+
+    _GRIM_COMMAND_DESCRIPTION["$func"]="$desc"
 
     # Default parameters for all commands
     _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
     _GRIM_COMMAND_FLAGS["${func}:output_format"]="table"
     _GRIM_COMMAND_DEFAULTS["${func}:output_format"]="table"
-    _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table tsv raw"
+    _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table tsv raw md"
     _GRIM_COMMAND_PARAMS["${func}:cache"]=1
     _GRIM_COMMAND_HELP["${func}:cache"]="Cache TTL in seconds (0 to disable)"
     _GRIM_COMMAND_PARAMS["${func}:filter"]=1

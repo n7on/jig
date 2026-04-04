@@ -1,6 +1,5 @@
 entra_app_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List Entra app registrations with their permissions"
     _grim_command_param_parse "$@" || return 1
 
     local apps
@@ -24,7 +23,6 @@ entra_app_list() {
 
 entra_permission_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List Microsoft Graph OAuth permission scopes"
     _grim_command_param_parse "$@" || return 1
 
     local graph_sp
@@ -38,5 +36,5 @@ entra_permission_list() {
         | _grim_command_output_render
 }
 
-_grim_command_complete_params entra_app_list
-_grim_command_complete_params "entra_permission_list"
+_grim_command_complete_params "entra_app_list" "List Entra app registrations with their permissions"
+_grim_command_complete_params "entra_permission_list" "List Microsoft Graph OAuth permission scopes"

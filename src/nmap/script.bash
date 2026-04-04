@@ -1,7 +1,6 @@
 # Run NSE script(s) against target
 nmap_script_run() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Run NSE script(s) against target"
     _grim_command_param target --required --help "Target host or IP"
     _grim_command_param script --required --help "NSE script name"
     _grim_command_param ports --help "Port range to scan"
@@ -16,4 +15,4 @@ nmap_script_run() {
 }
 
 # Register completions
-_grim_command_complete_params "nmap_script_run" "target" "script" "ports"
+_grim_command_complete_params "nmap_script_run" "Run NSE script(s) against target" "target" "script" "ports"

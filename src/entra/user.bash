@@ -1,6 +1,5 @@
 entra_user_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List Entra users with license and MFA info"
     _grim_command_param odata_filter --positional --help "OData filter expression"
     _grim_command_param_parse "$@" || return 1
 
@@ -20,4 +19,4 @@ entra_user_list() {
         | _grim_command_output_render
 }
 
-_grim_command_complete_params "entra_user_list" "odata_filter"
+_grim_command_complete_params "entra_user_list" "List Entra users with license and MFA info" "odata_filter"

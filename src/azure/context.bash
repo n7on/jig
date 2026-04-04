@@ -15,7 +15,6 @@ _azure_context_get_names() {
 }
 
 azure_context_list() {
-    _grim_command_description "List available Azure contexts"
     _grim_command_param_parse "$@" || return 1
 
     local current=""
@@ -36,7 +35,6 @@ azure_context_list() {
 
 azure_context_add() {
     _grim_command_requires az || return 1
-    _grim_command_description "Create a new Azure context and log in"
     _grim_command_param name --required --positional --help "Context name"
     _grim_command_param_parse "$@" || return 1
 
@@ -52,7 +50,6 @@ azure_context_add() {
 }
 
 azure_context_switch() {
-    _grim_command_description "Switch to a named Azure context (use 'default' to restore ~/.azure)"
     _grim_command_param name --required --positional --help "Context name (or 'default')"
     _grim_command_param_parse "$@" || return 1
 
@@ -71,7 +68,6 @@ azure_context_switch() {
 }
 
 azure_context_remove() {
-    _grim_command_description "Remove a named Azure context"
     _grim_command_param name --required --positional --help "Context name"
     _grim_command_param_parse "$@" || return 1
 
@@ -91,9 +87,9 @@ azure_context_remove() {
     rm -rf "$context_path"
 }
 
-_grim_command_complete_params azure_context_list
-_grim_command_complete_params azure_context_add name
-_grim_command_complete_params azure_context_switch name
+_grim_command_complete_params "azure_context_list" "List available Azure contexts"
+_grim_command_complete_params "azure_context_add" "Create a new Azure context and log in" name
+_grim_command_complete_params "azure_context_switch" "Switch to a named Azure context (use 'default' to restore ~/.azure)" name
 _grim_command_complete_func  azure_context_switch name _azure_context_get_names
-_grim_command_complete_params azure_context_remove name
+_grim_command_complete_params "azure_context_remove" "Remove a named Azure context" name
 _grim_command_complete_func  azure_context_remove name _azure_context_get_names

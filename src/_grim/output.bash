@@ -13,8 +13,8 @@ _grim_command_output_render() {
     fi
 
     case "$format" in
-        json|tsv|table) ;;
-        *) _grim_message_error "Invalid output format: $format (expected: raw, json, tsv, table)"; return 1 ;;
+        json|tsv|table|md) ;;
+        *) _grim_message_error "Invalid output format: $format (expected: raw, json, tsv, table, md)"; return 1 ;;
     esac
 
     local data

@@ -1,7 +1,6 @@
 # Connect to a TLS server and display certificate/connection info
 openssl_client_connect() {
     _grim_command_requires openssl || return 1
-    _grim_command_description "Connect to a TLS server and display certificate info"
     _grim_command_param host --required --positional --help "Target hostname"
     _grim_command_param port --default 443 --help "Target port"
     _grim_command_param message --default "" --help "Message to send after connect"
@@ -27,6 +26,6 @@ _openssl_complete_messages() {
 }
 
 # Register completions
-_grim_command_complete_params "openssl_client_connect" "host" "port" "message"
+_grim_command_complete_params "openssl_client_connect" "Connect to a TLS server and display certificate info" "host" "port" "message"
 _grim_command_complete_values "openssl_client_connect" "port" "443" "8443" "587" "465" "993" "995" "636" "853" "5223" "8080"
 _grim_command_complete_func "openssl_client_connect" "message" _openssl_complete_messages

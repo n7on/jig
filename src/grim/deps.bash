@@ -1,5 +1,4 @@
 grim_deps() {
-    _grim_command_description "List all external dependencies across grim modules"
     _grim_command_param_parse "$@" || return 1
 
     {
@@ -22,4 +21,4 @@ grim_deps() {
     } | sort -u | _grim_command_output_render "dependency,type"
 }
 
-_grim_command_complete_params grim_deps
+_grim_command_complete_params "grim_deps" "List all external dependencies across grim modules"

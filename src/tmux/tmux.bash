@@ -5,7 +5,6 @@
 #        some_command | tmux_popup --title "My Output" --width 80% --height 60%
 tmux_popup() {
     _grim_command_requires tmux || return 1
-    _grim_command_description "Display piped input in a floating tmux popup"
     _grim_command_param title --default "grim" --help "Popup title"
     _grim_command_param width --default "80%" --help "Popup width (columns or percentage)"
     _grim_command_param height --default "60%" --help "Popup height (rows or percentage)"
@@ -29,7 +28,6 @@ tmux_popup() {
 #        some_command | tmux_pane --size 40% --horizontal
 tmux_pane() {
     _grim_command_requires tmux || return 1
-    _grim_command_description "Display piped input in a tmux split pane"
     _grim_command_param size --default "40%" --help "Pane size (rows/columns or percentage)"
     _grim_command_param horizontal --help "Split horizontally instead of vertically"
     _grim_command_param_parse "$@" || return 1
@@ -51,5 +49,5 @@ tmux_pane() {
     "${cmd[@]}"
 }
 
-_grim_command_complete_params "tmux_popup" "title" "width" "height"
-_grim_command_complete_params "tmux_pane" "size" "horizontal"
+_grim_command_complete_params "tmux_popup" "Display piped input in a floating tmux popup" "title" "width" "height"
+_grim_command_complete_params "tmux_pane" "Display piped input in a tmux split pane" "size" "horizontal"

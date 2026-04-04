@@ -21,7 +21,6 @@ _MS365_DELEGATED_PERMISSIONS=(
 
 ms365_app_setup() {
     _grim_command_requires az || return 1
-    _grim_command_description "Create or update the _grim app registration with required MS365 permissions"
     _grim_command_param_parse "$@" || return 1
 
     local graph_sp
@@ -143,7 +142,6 @@ ms365_app_setup() {
 
 ms365_app_show() {
     _grim_command_requires az || return 1
-    _grim_command_description "Show the _grim app registration and its permissions"
     _grim_command_param_parse "$@" || return 1
 
     local app
@@ -162,7 +160,6 @@ ms365_app_show() {
 
 ms365_login() {
     _grim_command_requires curl || return 1
-    _grim_command_description "Authenticate with the _grim app using device code flow"
     _grim_command_param_parse "$@" || return 1
 
     local config="$_MS365_TOKEN_DIR/app.json"
@@ -384,6 +381,6 @@ _ms365_graph_post_delegated() {
 }
 
 # Register completions
-_grim_command_complete_params "ms365_app_setup"
-_grim_command_complete_params "ms365_app_show"
-_grim_command_complete_params "ms365_login"
+_grim_command_complete_params "ms365_app_setup" "Create or update the _grim app registration with required MS365 permissions"
+_grim_command_complete_params "ms365_app_show" "Show the _grim app registration and its permissions"
+_grim_command_complete_params "ms365_login" "Authenticate with the _grim app using device code flow"

@@ -20,7 +20,6 @@ _entra_get_all() {
 
 entra_license() {
     _grim_command_requires az || return 1
-    _grim_command_description "List Entra license information"
     _grim_command_param_parse "$@" || return 1
 
     local result
@@ -33,7 +32,6 @@ entra_license() {
 
 entra_license_plan_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List service plans across all subscribed Entra SKUs"
     _grim_command_param_parse "$@" || return 1
 
     local result
@@ -45,5 +43,5 @@ entra_license_plan_list() {
 }
 
 # Register completions
-_grim_command_complete_params "entra_license"
-_grim_command_complete_params "entra_license_plan_list"
+_grim_command_complete_params "entra_license" "List Entra license information"
+_grim_command_complete_params "entra_license_plan_list" "List service plans across all subscribed Entra SKUs"

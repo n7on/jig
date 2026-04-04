@@ -16,7 +16,6 @@ _ado_get_packages() {
 
 ado_feed_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List Azure DevOps feeds"
     _grim_command_param organization --default "$(_grim_command_config_get ado config organization)" --help "Azure DevOps organization"
     _grim_command_param_parse "$@" || return 1
 
@@ -35,7 +34,6 @@ ado_feed_list() {
 
 ado_feed_package_list() {
     _grim_command_requires az || return 1
-    _grim_command_description "List packages in an Azure DevOps feed"
     _grim_command_param feed         --required --help "Feed name"
     _grim_command_param organization --default "$(_grim_command_config_get ado config organization)" --help "Azure DevOps organization"
     _grim_command_param_parse "$@" || return 1
@@ -55,7 +53,6 @@ ado_feed_package_list() {
 
 ado_feed_package_download() {
     _grim_command_requires az || return 1
-    _grim_command_description "Download latest package from Azure DevOps feed"
     _grim_command_param package      --required --positional --help "Package name"
     _grim_command_param path         --default "." --help "Download path"
     _grim_command_param feed         --required --help "Feed name"
@@ -83,9 +80,9 @@ ado_feed_package_download() {
 }
 
 # Register completions
-_grim_command_complete_params "ado_feed_list" "organization"
-_grim_command_complete_params "ado_feed_package_list" "feed" "organization"
+_grim_command_complete_params "ado_feed_list" "List Azure DevOps feeds" "organization"
+_grim_command_complete_params "ado_feed_package_list" "List packages in an Azure DevOps feed" "feed" "organization"
 _grim_command_complete_func  "ado_feed_package_list" "feed" _ado_get_feeds
-_grim_command_complete_params "ado_feed_package_download" "package" "path" "feed" "organization"
+_grim_command_complete_params "ado_feed_package_download" "Download latest package from Azure DevOps feed" "package" "path" "feed" "organization"
 _grim_command_complete_func  "ado_feed_package_download" "feed" _ado_get_feeds
 _grim_command_complete_func  "ado_feed_package_download" "package" _ado_get_packages

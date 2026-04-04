@@ -46,7 +46,6 @@ _azure_law_load_query() {
 azure_law_query() {
     _grim_command_requires az || return 1
     _grim_command_requires_az_extension log-analytics || return 1
-    _grim_command_description "Query Azure Log Analytics workspace using a saved KQL file"
     _grim_command_param name      --required --positional --help "Query name (from queries/law/)"
     _grim_command_param workspace --required --help "Log Analytics workspace name or ID"
     _grim_command_param timespan  --default "PT1H" --help "Query timespan as ISO 8601 duration"
@@ -77,7 +76,7 @@ azure_law_query() {
 }
 
 # Register completions
-_grim_command_complete_params "azure_law_query" "name" "workspace" "timespan"
+_grim_command_complete_params "azure_law_query" "Query Azure Log Analytics workspace using a saved KQL file" "name" "workspace" "timespan"
 _grim_command_complete_values "azure_law_query" "timespan" "PT1H" "PT6H" "PT12H" "P1D" "P3D" "P7D" "P14D" "P30D"
 _grim_command_complete_func "azure_law_query" "name" _azure_law_get_query_names
 _grim_command_complete_func "azure_law_query" "workspace" _azure_law_get_workspaces

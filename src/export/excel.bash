@@ -1,5 +1,4 @@
 export_excel() {
-    _grim_command_description "Convert TSV input to a formatted Excel (.xlsx) file"
     _grim_command_param output --default "export.xlsx" --help "Output .xlsx file path"
     _grim_command_param sheet  --default "Sheet1"      --help "Sheet name (appends if file exists)"
     _grim_command_param input  --path file             --help "Input TSV file (default: stdin)"
@@ -12,4 +11,4 @@ export_excel() {
     fi
 }
 
-_grim_command_complete_params export_excel output sheet input
+_grim_command_complete_params "export_excel" "Convert TSV input to a formatted Excel (.xlsx) file" output sheet input

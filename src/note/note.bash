@@ -2,29 +2,13 @@
 
 _NOTE_DIR="$HOME/.notes"
 
-# Pull from remote if ~/.notes/ is a git repo
-_note_git_pull() {
-    [[ -d "$_NOTE_DIR/.git" ]] || return 0
-    git -C "$_NOTE_DIR" pull --quiet 2>/dev/null || _grim_message_warn "git pull failed in $_NOTE_DIR"
-}
-
-# Stage, commit, and push if ~/.notes/ is a git repo
-_note_git_push() {
-    [[ -d "$_NOTE_DIR/.git" ]] || return 0
-    git -C "$_NOTE_DIR" add -A
-    git -C "$_NOTE_DIR" diff --cached --quiet && return 0
-    git -C "$_NOTE_DIR" commit --quiet -m "$1" 2>/dev/null || return 1
-    git -C "$_NOTE_DIR" push --quiet 2>/dev/null || _grim_message_warn "git push failed in $_NOTE_DIR"
-}
-
 # Add a new note for today
 note_add() {
-    _grim_command_description "Add a new note for today"
     _grim_command_param message --positional --required --help "The note text, supports #tags"
     _grim_command_param_parse "$@" || return 1
 
     mkdir -p "$_NOTE_DIR"
-    _note_git_pull
+    git_pull --path "$_NOTE_DIR"
 
     local today
     today=$(date +%Y-%m-%d)
@@ -41,18 +25,17 @@ note_add() {
 
     json_append --file "$file" --item "$new_note"
 
-    _note_git_push "add note $id"
+    git_push --path "$_NOTE_DIR" --message "add note $id"
 
     echo "$id"
 }
 
 # List notes for a given date (defaults to today)
 note_list() {
-    _grim_command_description "List notes for a given date"
     _grim_command_param date --default "$(date +%Y-%m-%d)" --positional --help "Date to list notes for"
     _grim_command_param_parse "$@" || return 1
 
-    _note_git_pull
+    git_pull --path "$_NOTE_DIR"
 
     local file="$_NOTE_DIR/${date}.json"
 
@@ -68,11 +51,10 @@ note_list() {
 
 # Delete a note by id
 note_delete() {
-    _grim_command_description "Delete a note by id"
     _grim_command_param id --positional --required --help "The note id to delete"
     _grim_command_param_parse "$@" || return 1
 
-    _note_git_pull
+    git_pull --path "$_NOTE_DIR"
 
     local found=0
 
@@ -90,7 +72,7 @@ note_delete() {
         return 1
     fi
 
-    _note_git_push "delete note $id"
+    git_push --path "$_NOTE_DIR" --message "delete note $id"
 }
 
 # Completion: list available date files
@@ -103,7 +85,7 @@ _note_complete_dates() {
 }
 
 # Register completions
-_grim_command_complete_params "note_add" "message"
-_grim_command_complete_params "note_list" "date"
-_grim_command_complete_params "note_delete" "id"
+_grim_command_complete_params "note_add" "Add a new note for today" "message"
+_grim_command_complete_params "note_list" "List notes for a given date" "date"
+_grim_command_complete_params "note_delete" "Delete a note by id" "id"
 _grim_command_complete_func "note_list" "date" _note_complete_dates

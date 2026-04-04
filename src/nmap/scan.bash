@@ -1,7 +1,6 @@
 # Quick scan of common ports
 nmap_scan_quick() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Quick scan of common ports"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param_parse "$@" || return 1
 
@@ -13,7 +12,6 @@ nmap_scan_quick() {
 # Full port scan (all 65535 ports)
 nmap_scan_full() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Full port scan (all 65535 ports)"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param_parse "$@" || return 1
 
@@ -25,7 +23,6 @@ nmap_scan_full() {
 # Service and version detection
 nmap_scan_services() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Service and version detection"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param ports --help "Port range to scan"
     _grim_command_param_parse "$@" || return 1
@@ -41,7 +38,6 @@ nmap_scan_services() {
 # OS detection (requires root)
 nmap_scan_os() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "OS detection (requires root)"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param_parse "$@" || return 1
 
@@ -60,7 +56,6 @@ nmap_scan_os() {
 # Network discovery (ping sweep)
 nmap_scan_discover() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Network discovery (ping sweep)"
     _grim_command_param subnet --required --positional --help "Subnet to scan"
     _grim_command_param_parse "$@" || return 1
 
@@ -72,7 +67,6 @@ nmap_scan_discover() {
 # Stealth SYN scan
 nmap_scan_stealth() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "Stealth SYN scan"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param ports --help "Port range to scan"
     _grim_command_param_parse "$@" || return 1
@@ -88,7 +82,6 @@ nmap_scan_stealth() {
 # UDP scan
 nmap_scan_udp() {
     _grim_command_requires nmap || return 1
-    _grim_command_description "UDP scan"
     _grim_command_param target --required --positional --help "Target host or IP"
     _grim_command_param ports --default "53,67,68,69,123,161,162,500,514,1900" --help "Port range to scan"
     _grim_command_param_parse "$@" || return 1
@@ -113,13 +106,13 @@ _nmap_complete_targets() {
 }
 
 # Register completions
-_grim_command_complete_params "nmap_scan_quick" "target"
-_grim_command_complete_params "nmap_scan_full" "target"
-_grim_command_complete_params "nmap_scan_services" "target" "ports"
-_grim_command_complete_params "nmap_scan_os" "target"
-_grim_command_complete_params "nmap_scan_discover" "subnet"
-_grim_command_complete_params "nmap_scan_stealth" "target" "ports"
-_grim_command_complete_params "nmap_scan_udp" "target" "ports"
+_grim_command_complete_params "nmap_scan_quick" "Quick scan of common ports" "target"
+_grim_command_complete_params "nmap_scan_full" "Full port scan (all 65535 ports)" "target"
+_grim_command_complete_params "nmap_scan_services" "Service and version detection" "target" "ports"
+_grim_command_complete_params "nmap_scan_os" "OS detection (requires root)" "target"
+_grim_command_complete_params "nmap_scan_discover" "Network discovery (ping sweep)" "subnet"
+_grim_command_complete_params "nmap_scan_stealth" "Stealth SYN scan" "target" "ports"
+_grim_command_complete_params "nmap_scan_udp" "UDP scan" "target" "ports"
 _grim_command_complete_func "nmap_scan_quick" "target" _nmap_complete_targets
 _grim_command_complete_func "nmap_scan_full" "target" _nmap_complete_targets
 _grim_command_complete_func "nmap_scan_services" "target" _nmap_complete_targets

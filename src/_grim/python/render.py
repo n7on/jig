@@ -175,6 +175,16 @@ def format_tsv(headers: list[str], rows: list[list[str]]) -> None:
         print("\t".join(row))
 
 
+def format_md(headers: list[str], rows: list[list[str]]) -> None:
+    def escape(s: str) -> str:
+        return s.replace("|", "\\|")
+
+    print("| " + " | ".join(escape(h) for h in headers) + " |")
+    print("| " + " | ".join("---" for _ in headers) + " |")
+    for row in rows:
+        print("| " + " | ".join(escape(val) for val in row) + " |")
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -182,7 +192,7 @@ def format_tsv(headers: list[str], rows: list[list[str]]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--headers", required=True)
-    parser.add_argument("--format", default="table", choices=["table", "json", "tsv"])
+    parser.add_argument("--format", default="table", choices=["table", "json", "tsv", "md"])
     parser.add_argument("--filter", default=None)
     parser.add_argument("--sort", default=None)
     parser.add_argument("--select", default=None)
@@ -221,6 +231,8 @@ def main() -> None:
         format_json(headers, rows)
     elif args.format == "tsv":
         format_tsv(headers, rows)
+    elif args.format == "md":
+        format_md(headers, rows)
 
 
 if __name__ == "__main__":
