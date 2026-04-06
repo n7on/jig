@@ -116,11 +116,17 @@ def format_show_tsv(cmd):
         print(f"{p['name']}\t{'yes' if p['required'] else ''}\t{'yes' if p['positional'] else ''}\t{p['default']}\t{p['help']}")
 
 
-def format_docs_md(commands):
+def format_docs_md(commands, grim_bin="grim"):
     """Output full markdown documentation."""
     print("# Grim Commands")
     print()
-    print("Available commands for the grim CLI framework.")
+    print(f"Grim is a bash CLI framework. Run commands using `{grim_bin}`:")
+    print()
+    print("```bash")
+    print(f"{grim_bin} nmap_scan_quick localhost")
+    print(f"{grim_bin} azure_graph_query my_query --output_format json")
+    print(f"{grim_bin} note_add \"my note #tag\"")
+    print("```")
     print()
 
     # Group by module
@@ -179,6 +185,7 @@ def main():
     parser.add_argument("src_dir")
     parser.add_argument("--format", default="list", choices=["list", "show", "docs"])
     parser.add_argument("--command", default=None)
+    parser.add_argument("--grim-bin", default="grim", dest="grim_bin")
     args = parser.parse_args()
 
     commands = parse_source_files(args.src_dir)
@@ -191,7 +198,7 @@ def main():
             sys.exit(1)
         format_show_tsv(commands[args.command])
     elif args.format == "docs":
-        format_docs_md(commands)
+        format_docs_md(commands, args.grim_bin)
 
 
 if __name__ == "__main__":

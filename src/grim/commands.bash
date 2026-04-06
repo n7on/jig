@@ -21,7 +21,7 @@ grim_command_show() {
 grim_command_docs() {
     _grim_command_param_parse "$@" || return 1
 
-    _grim_command_exec_python grim command_docs.py "$_GRIM_DIR/src" --format docs
+    _grim_command_exec_python grim command_docs.py "$_GRIM_DIR/src" --format docs --grim-bin "grim"
 }
 
 _grim_command_complete_params "grim_command_list" "List all registered grim commands"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Wrapper to run grim commands in a non-interactive context
+# Usage: grim <command> [args...]
+
+_GRIM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$_GRIM_DIR/init.bash"
+
+cmd="$1"
+shift
+
+if declare -F "$cmd" &>/dev/null; then
+    "$cmd" "$@"
+else
+    echo "Unknown command: $cmd" >&2
+    echo "Run 'grim grim_command_list' for available commands" >&2
+    exit 1
+fi

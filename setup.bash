@@ -28,6 +28,6 @@ python3 -m venv "$_GRIM_DIR/.venv"
 "$_GRIM_DIR/.venv/bin/pip" install --quiet --disable-pip-version-check "$_GRIM_DIR"
 
 echo ""
-echo "Setup complete. Add the following line to your .bashrc:"
+echo "Setup complete. Add the following to your .bashrc:"
 echo ""
-echo "  source $_GRIM_DIR/src/init.bash"
+echo "  source $_GRIM_DIR/init.bash"

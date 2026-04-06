@@ -86,6 +86,7 @@ json_remove() {
 }
 
 # Register completions
+_grim_command_complete_params "json_build" "Build a JSON object from key=value arguments"
 _grim_command_complete_params "json_get" "Get a single value from JSON by path" "path"
 _grim_command_complete_params "json_tsv" "Extract fields from a JSON array as TSV" "path" "fields"
 _grim_command_complete_params "json_kv" "Flatten a JSON object to key/value rows" "path"
