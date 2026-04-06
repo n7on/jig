@@ -124,7 +124,7 @@ def format_docs_md(commands, grim_bin="grim"):
     print()
     print("```bash")
     print(f"{grim_bin} nmap_scan_quick localhost")
-    print(f"{grim_bin} azure_graph_query my_query --output_format json")
+    print(f"{grim_bin} azure_graph_query my_query --output json")
     print(f"{grim_bin} note_add \"my note #tag\"")
     print("```")
     print()
@@ -146,7 +146,7 @@ def format_docs_md(commands, grim_bin="grim"):
                 print()
 
             # Filter out framework params for docs
-            framework_params = {"output_format", "cache", "filter", "sort", "select", "limit", "debug", "help"}
+            framework_params = {"output", "cache", "filter", "sort", "select", "limit", "debug", "help"}
             params = [p for p in cmd["params"] if p["name"] not in framework_params]
 
             if params:
@@ -171,7 +171,7 @@ def format_docs_md(commands, grim_bin="grim"):
     print()
     print("| Parameter | Description |")
     print("| --- | --- |")
-    print("| `--output_format` | Output format: `table`, `json`, `tsv`, `raw`, `md`. Default: `table` |")
+    print("| `--output` | Output format: `table`, `json`, `tsv`, `raw`, `md`. Default: `table` |")
     print("| `--cache` | Cache TTL in seconds. Use bare `--cache` for 300s default |")
     print("| `--filter` | Filter rows: `COL=value` (exact/wildcard) or `COL~value` (contains) |")
     print("| `--sort` | Sort by column. Prefix with `-` for descending |")

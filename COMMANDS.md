@@ -4,7 +4,7 @@ Grim is a bash CLI framework. Run commands using `grim`:
 
 ```bash
 grim nmap_scan_quick localhost
-grim azure_graph_query my_query --output_format json
+grim azure_graph_query my_query --output json
 grim note_add "my note #tag"
 ```
 
@@ -122,7 +122,6 @@ Convert TSV input to a formatted Excel (.xlsx) file
 | Parameter | Required | Description |
 | --- | --- | --- |
 | `--input` |  | Input TSV file (default: stdin) |
-| `--output` |  | Output .xlsx file path. Default: `export.xlsx` |
 | `--sheet` |  | Sheet name (appends if file exists). Default: `Sheet1` |
 
 ## git
@@ -434,7 +433,6 @@ Decrypt a file
 | --- | --- | --- |
 | `--cipher` |  | Cipher algorithm. Default: `aes-256-cbc` |
 | `--input` | yes | Input file to decrypt |
-| `--output` |  | Output file (default: input without .enc) |
 | `--password` | yes | Decryption password |
 
 ### `openssl_file_encrypt`
@@ -445,7 +443,6 @@ Encrypt a file using AES-256-CBC
 | --- | --- | --- |
 | `--cipher` |  | Cipher algorithm. Default: `aes-256-cbc` |
 | `--input` | yes | Input file to encrypt |
-| `--output` |  | Output file (default: input.enc) |
 | `--password` | yes | Encryption password |
 
 ## tmux
@@ -475,7 +472,7 @@ All commands support these parameters:
 
 | Parameter | Description |
 | --- | --- |
-| `--output_format` | Output format: `table`, `json`, `tsv`, `raw`, `md`. Default: `table` |
+| `--output` | Output format: `table`, `json`, `tsv`, `raw`, `md`. Default: `table` |
 | `--cache` | Cache TTL in seconds. Use bare `--cache` for 300s default |
 | `--filter` | Filter rows: `COL=value` (exact/wildcard) or `COL~value` (contains) |
 | `--sort` | Sort by column. Prefix with `-` for descending |

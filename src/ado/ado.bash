@@ -4,13 +4,13 @@ _grim_command_config_init ado config
 
 _ado_get_feeds() {
     local feeds
-    feeds=$(ado_feed_list --output_format tsv 2>/dev/null | awk '{print $1}')
+    feeds=$(ado_feed_list --output tsv 2>/dev/null | awk '{print $1}')
     _grim_command_complete_filter "$feeds" "$1"
 }
 
 _ado_get_packages() {
     local packages
-    packages=$(ado_feed_package_list --output_format tsv 2>/dev/null | awk '{print $1}')
+    packages=$(ado_feed_package_list --output tsv 2>/dev/null | awk '{print $1}')
     _grim_command_complete_filter "$packages" "$1"
 }
 

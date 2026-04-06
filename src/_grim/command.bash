@@ -352,10 +352,10 @@ _grim_command_complete_params() {
     _GRIM_COMMAND_DESCRIPTION["$func"]="$desc"
 
     # Default parameters for all commands
-    _GRIM_COMMAND_PARAMS["${func}:output_format"]=1
-    _GRIM_COMMAND_FLAGS["${func}:output_format"]="table"
-    _GRIM_COMMAND_DEFAULTS["${func}:output_format"]="table"
-    _GRIM_COMMAND_COMPLETERS["${func}:--output_format"]="json table tsv raw md"
+    _GRIM_COMMAND_PARAMS["${func}:output"]=1
+    _GRIM_COMMAND_FLAGS["${func}:output"]="table"
+    _GRIM_COMMAND_DEFAULTS["${func}:output"]="table"
+    _GRIM_COMMAND_COMPLETERS["${func}:--output"]="json table tsv raw md"
     _GRIM_COMMAND_PARAMS["${func}:cache"]=1
     _GRIM_COMMAND_HELP["${func}:cache"]="Cache TTL in seconds (0 to disable)"
     _GRIM_COMMAND_PARAMS["${func}:filter"]=1

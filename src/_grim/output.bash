@@ -5,7 +5,7 @@
 
 _grim_command_output_render() {
     local headers="${1:-}"
-    local format="${output_format:-table}"
+    local format="${output:-table}"
 
     if [[ "$format" == "raw" ]]; then
         cat

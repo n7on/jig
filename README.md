@@ -23,12 +23,12 @@ After sourcing `init.bash`, commands are available directly in your shell:
 
 ```bash
 nmap_scan_quick localhost
-azure_context_list --output_format json
+azure_context_list --output json
 ```
 
 ## Output formats
 
-All commands support `--output_format`:
+All commands support `--output`:
 
 | Format | Description |
 | --- | --- |

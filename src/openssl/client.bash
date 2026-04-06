@@ -4,7 +4,7 @@ openssl_client_connect() {
     _grim_command_param host --required --positional --help "Target hostname"
     _grim_command_param port --default 443 --help "Target port"
     _grim_command_param message --default "" --help "Message to send after connect"
-    _grim_command_param output_format --default raw
+    _grim_command_param output --default raw
     _grim_command_param_parse "$@" || return 1
 
     local cmd=(openssl s_client -connect "${host}:${port}")

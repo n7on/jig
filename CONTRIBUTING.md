@@ -23,7 +23,7 @@ src/
 ```bash
 # From a shell script (no need to source init.bash)
 /path/to/grim/bin/grim nmap_scan_quick localhost
-/path/to/grim/bin/grim azure_context_list --output_format json
+/path/to/grim/bin/grim azure_context_list --output json
 
 # From a Makefile
 scan:
@@ -97,7 +97,7 @@ Commands produce TSV and pipe it through `_grim_command_output_render`:
 some_command | awk '{print $1 "\t" $2}' | _grim_command_output_render "name,value"
 ```
 
-The renderer handles `--output_format`, `--filter`, `--sort`, `--select`, and `--limit` automatically.
+The renderer handles `--output`, `--filter`, `--sort`, `--select`, and `--limit` automatically.
 
 If your data already includes a header row (e.g. from a Python script), omit the argument:
 
@@ -148,7 +148,7 @@ _weather_location_complete() {
 _grim_command_complete_func "weather_forecast" "location" _weather_location_complete
 ```
 
-`_grim_command_complete_params` takes the function name, a description, and the parameter names the command uses. The framework params (`--output_format`, `--filter`, `--sort`, etc.) are included automatically.
+`_grim_command_complete_params` takes the function name, a description, and the parameter names the command uses. The framework params (`--output`, `--filter`, `--sort`, etc.) are included automatically.
 
 ## Python scripts
 
@@ -215,7 +215,7 @@ _grim_command_complete_func   "weather_forecast" "location" _weather_complete_lo
 
 ```bash
 weather_forecast London                         # table (default)
-weather_forecast London --output_format json    # JSON array
+weather_forecast London --output json    # JSON array
 weather_forecast London --days 7 --filter max~2 # filtered
 weather_forecast London --cache 3600            # cached for 1 hour
 weather_forecast --help                         # show parameter help
