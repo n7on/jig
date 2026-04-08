@@ -1,4 +1,5 @@
 entra_app_list() {
+    _description "List Entra app registrations with their permissions"
     _requires az || return 1
     _param_parse "$@" || return 1
 
@@ -22,6 +23,7 @@ entra_app_list() {
 }
 
 entra_permission_list() {
+    _description "List Microsoft Graph OAuth permission scopes"
     _requires az || return 1
     _param_parse "$@" || return 1
 
@@ -36,5 +38,5 @@ entra_permission_list() {
         | _output_render
 }
 
-_complete_params "entra_app_list" "List Entra app registrations with their permissions"
-_complete_params "entra_permission_list" "List Microsoft Graph OAuth permission scopes"
+_complete_params "entra_app_list"
+_complete_params "entra_permission_list"

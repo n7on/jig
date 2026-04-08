@@ -1,6 +1,7 @@
 # List external dependencies across tome modules
 
 deps() {
+    _description "List all external dependencies across tome modules"
     _param_parse "$@" || return 1
 
     {
@@ -23,4 +24,4 @@ deps() {
     } | sort -u | _output_render "dependency,type"
 }
 
-_complete_params "deps" "List all external dependencies across tome modules"
+_complete_params "deps"

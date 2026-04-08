@@ -1,5 +1,6 @@
 # Run NSE script(s) against target
 nmap_script_run() {
+    _description "Run NSE script(s) against target"
     _requires nmap || return 1
     _param target --required --help "Target host or IP"
     _param script --required --help "NSE script name"
@@ -15,4 +16,4 @@ nmap_script_run() {
 }
 
 # Register completions
-_complete_params "nmap_script_run" "Run NSE script(s) against target" "target" "script" "ports"
+_complete_params "nmap_script_run" "target" "script" "ports"

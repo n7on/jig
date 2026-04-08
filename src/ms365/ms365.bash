@@ -20,6 +20,7 @@ _MS365_DELEGATED_PERMISSIONS=(
 )
 
 ms365_app_setup() {
+    _description "Create or update the _tome app registration with required MS365 permissions"
     _requires az || return 1
     _param_parse "$@" || return 1
 
@@ -141,6 +142,7 @@ ms365_app_setup() {
 }
 
 ms365_app_show() {
+    _description "Show the _tome app registration and its permissions"
     _requires az || return 1
     _param_parse "$@" || return 1
 
@@ -159,6 +161,7 @@ ms365_app_show() {
 # --- Delegated auth (device code flow, user context) ---
 
 ms365_login() {
+    _description "Authenticate with the _tome app using device code flow"
     _requires curl || return 1
     _param_parse "$@" || return 1
 
@@ -381,6 +384,8 @@ _ms365_graph_post_delegated() {
 }
 
 # Register completions
-_complete_params "ms365_app_setup" "Create or update the _tome app registration with required MS365 permissions"
-_complete_params "ms365_app_show" "Show the _tome app registration and its permissions"
-_complete_params "ms365_login" "Authenticate with the _tome app using device code flow"
+_complete_type "ms365_app_setup" action
+_complete_params "ms365_app_setup"
+_complete_params "ms365_app_show"
+_complete_type "ms365_login" action
+_complete_params "ms365_login"

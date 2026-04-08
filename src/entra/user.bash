@@ -1,4 +1,5 @@
 entra_user_list() {
+    _description "List Entra users with license and MFA info"
     _requires az || return 1
     _param odata_filter --positional --help "OData filter expression"
     _param_parse "$@" || return 1
@@ -19,4 +20,4 @@ entra_user_list() {
         | _output_render
 }
 
-_complete_params "entra_user_list" "List Entra users with license and MFA info" "odata_filter"
+_complete_params "entra_user_list" "odata_filter"

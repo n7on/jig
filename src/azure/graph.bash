@@ -38,6 +38,7 @@ _azure_graph_load_query() {
 }
 
 azure_graph_query() {
+    _description "Query Azure Resource Graph using a saved KQL file"
     _requires az || return 1
     _param name          --required --positional --help "Query name (from queries/graph/)"
     _param subscriptions --help "Comma-separated list of subscription IDs to scope the query"
@@ -61,6 +62,6 @@ azure_graph_query() {
 }
 
 # Register completions
-_complete_params "azure_graph_query" "Query Azure Resource Graph using a saved KQL file" "name" "subscriptions"
+_complete_params "azure_graph_query" "name" "subscriptions"
 _complete_func "azure_graph_query" "name" _azure_graph_get_query_names
 _complete_func "azure_graph_query" "subscriptions" _azure_account_get_subscriptions

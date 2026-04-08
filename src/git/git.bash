@@ -3,6 +3,7 @@
 # Pull from remote if directory is a git repo
 # Usage: git_pull --path ~/my-repo
 git_pull() {
+    _description "Pull from remote if directory is a git repo"
     _requires git || return 1
     _param path --default "." --positional --path dir --help "Path to git repository"
     _param_parse "$@" || return 1
@@ -14,6 +15,7 @@ git_pull() {
 # Stage, commit, and push changes if directory is a git repo
 # Usage: git_push --path ~/my-repo --message "updated files"
 git_push() {
+    _description "Stage, commit, and push changes"
     _requires git || return 1
     _param path    --default "." --positional --path dir --help "Path to git repository"
     _param message --required --help "Commit message"
@@ -29,6 +31,7 @@ git_push() {
 # Pull, then stage+commit+push (convenience wrapper)
 # Usage: git_sync --path ~/my-repo --message "updated files"
 git_sync() {
+    _description "Pull then commit and push changes"
     _requires git || return 1
     _param path    --default "." --positional --path dir --help "Path to git repository"
     _param message --required --help "Commit message"
@@ -42,6 +45,7 @@ git_sync() {
 # Usage: git_status
 #        git_status --path ~/my-repo
 git_status() {
+    _description "Show status of files in a git repo"
     _requires git || return 1
     _param path --default "." --positional --path dir --help "Path to git repository"
     _param_parse "$@" || return 1
@@ -64,7 +68,10 @@ git_status() {
 }
 
 # Register completions
-_complete_params "git_status" "Show status of files in a git repo" "path"
-_complete_params "git_pull" "Pull from remote if directory is a git repo" "path"
-_complete_params "git_push" "Stage, commit, and push changes" "path" "message"
-_complete_params "git_sync" "Pull then commit and push changes" "path" "message"
+_complete_params "git_status" "path"
+_complete_type "git_pull" action
+_complete_params "git_pull" "path"
+_complete_type "git_push" action
+_complete_params "git_push" "path" "message"
+_complete_type "git_sync" action
+_complete_params "git_sync" "path" "message"

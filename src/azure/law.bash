@@ -44,6 +44,7 @@ _azure_law_load_query() {
 }
 
 azure_law_query() {
+    _description "Query Azure Log Analytics workspace using a saved KQL file"
     _requires az || return 1
     _requires_az_extension log-analytics || return 1
     _param name      --required --positional --help "Query name (from queries/law/)"
@@ -76,7 +77,7 @@ azure_law_query() {
 }
 
 # Register completions
-_complete_params "azure_law_query" "Query Azure Log Analytics workspace using a saved KQL file" "name" "workspace" "timespan"
+_complete_params "azure_law_query" "name" "workspace" "timespan"
 _complete_values "azure_law_query" "timespan" "PT1H" "PT6H" "PT12H" "P1D" "P3D" "P7D" "P14D" "P30D"
 _complete_func "azure_law_query" "name" _azure_law_get_query_names
 _complete_func "azure_law_query" "workspace" _azure_law_get_workspaces

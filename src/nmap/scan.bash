@@ -1,5 +1,6 @@
 # Quick scan of common ports
 nmap_scan_quick() {
+    _description "Quick scan of common ports"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param_parse "$@" || return 1
@@ -11,6 +12,7 @@ nmap_scan_quick() {
 
 # Full port scan (all 65535 ports)
 nmap_scan_full() {
+    _description "Full port scan (all 65535 ports)"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param_parse "$@" || return 1
@@ -22,6 +24,7 @@ nmap_scan_full() {
 
 # Service and version detection
 nmap_scan_services() {
+    _description "Service and version detection"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param ports --help "Port range to scan"
@@ -37,6 +40,7 @@ nmap_scan_services() {
 
 # OS detection (requires root)
 nmap_scan_os() {
+    _description "OS detection (requires root)"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param_parse "$@" || return 1
@@ -55,6 +59,7 @@ nmap_scan_os() {
 
 # Network discovery (ping sweep)
 nmap_scan_discover() {
+    _description "Network discovery (ping sweep)"
     _requires nmap || return 1
     _param subnet --required --positional --help "Subnet to scan"
     _param_parse "$@" || return 1
@@ -66,6 +71,7 @@ nmap_scan_discover() {
 
 # Stealth SYN scan
 nmap_scan_stealth() {
+    _description "Stealth SYN scan"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param ports --help "Port range to scan"
@@ -81,6 +87,7 @@ nmap_scan_stealth() {
 
 # UDP scan
 nmap_scan_udp() {
+    _description "UDP scan"
     _requires nmap || return 1
     _param target --required --positional --help "Target host or IP"
     _param ports --default "53,67,68,69,123,161,162,500,514,1900" --help "Port range to scan"
@@ -106,13 +113,13 @@ _nmap_complete_targets() {
 }
 
 # Register completions
-_complete_params "nmap_scan_quick" "Quick scan of common ports" "target"
-_complete_params "nmap_scan_full" "Full port scan (all 65535 ports)" "target"
-_complete_params "nmap_scan_services" "Service and version detection" "target" "ports"
-_complete_params "nmap_scan_os" "OS detection (requires root)" "target"
-_complete_params "nmap_scan_discover" "Network discovery (ping sweep)" "subnet"
-_complete_params "nmap_scan_stealth" "Stealth SYN scan" "target" "ports"
-_complete_params "nmap_scan_udp" "UDP scan" "target" "ports"
+_complete_params "nmap_scan_quick" "target"
+_complete_params "nmap_scan_full" "target"
+_complete_params "nmap_scan_services" "target" "ports"
+_complete_params "nmap_scan_os" "target"
+_complete_params "nmap_scan_discover" "subnet"
+_complete_params "nmap_scan_stealth" "target" "ports"
+_complete_params "nmap_scan_udp" "target" "ports"
 _complete_func "nmap_scan_quick" "target" _nmap_complete_targets
 _complete_func "nmap_scan_full" "target" _nmap_complete_targets
 _complete_func "nmap_scan_services" "target" _nmap_complete_targets

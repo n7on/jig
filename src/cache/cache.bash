@@ -1,6 +1,7 @@
 # Cache management commands
 
 cache_clear() {
+    _description "Clear all cached command output"
     _param_parse "$@" || return 1
 
     if [[ -d "$_CACHE_DIR" ]]; then
@@ -9,4 +10,5 @@ cache_clear() {
     fi
 }
 
-_complete_params "cache_clear" "Clear all cached command output"
+_complete_type "cache_clear" action
+_complete_params "cache_clear"

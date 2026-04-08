@@ -1,5 +1,6 @@
 # Connect to a TLS server and display certificate/connection info
 openssl_client_connect() {
+    _description "Connect to a TLS server and display certificate info"
     _requires openssl || return 1
     _param host --required --positional --help "Target hostname"
     _param port --default 443 --help "Target port"
@@ -26,6 +27,6 @@ _openssl_complete_messages() {
 }
 
 # Register completions
-_complete_params "openssl_client_connect" "Connect to a TLS server and display certificate info" "host" "port" "message"
+_complete_params "openssl_client_connect" "host" "port" "message"
 _complete_values "openssl_client_connect" "port" "443" "8443" "587" "465" "993" "995" "636" "853" "5223" "8080"
 _complete_func "openssl_client_connect" "message" _openssl_complete_messages

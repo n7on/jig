@@ -1,5 +1,6 @@
 # Encrypt a file using AES-256-CBC
 openssl_file_encrypt() {
+    _description "Encrypt a file using AES-256-CBC"
     _requires openssl || return 1
     _param input --required --path file --help "Input file to encrypt"
     _param output --help "Output file (default: input.enc)"
@@ -16,6 +17,7 @@ openssl_file_encrypt() {
 
 # Decrypt a file
 openssl_file_decrypt() {
+    _description "Decrypt a file"
     _requires openssl || return 1
     _param input --required --path file --help "Input file to decrypt"
     _param output --help "Output file (default: input without .enc)"
@@ -31,7 +33,9 @@ openssl_file_decrypt() {
 }
 
 # Register completions
-_complete_params "openssl_file_encrypt" "Encrypt a file using AES-256-CBC" "input" "output" "password" "cipher"
-_complete_params "openssl_file_decrypt" "Decrypt a file" "input" "output" "password" "cipher"
+_complete_type "openssl_file_encrypt" action
+_complete_params "openssl_file_encrypt" "input" "output" "password" "cipher"
+_complete_type "openssl_file_decrypt" action
+_complete_params "openssl_file_decrypt" "input" "output" "password" "cipher"
 _complete_values "openssl_file_encrypt" "cipher" "aes-256-cbc" "aes-128-cbc"
 _complete_values "openssl_file_decrypt" "cipher" "aes-256-cbc" "aes-128-cbc"

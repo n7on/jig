@@ -4,6 +4,7 @@ _NOTE_DIR="$HOME/.notes"
 
 # Add a new note for today
 note_add() {
+    _description "Add a new note for today"
     _param message --positional --required --help "The note text, supports #tags"
     _param_parse "$@" || return 1
 
@@ -32,6 +33,7 @@ note_add() {
 
 # List notes for a given date (defaults to today)
 note_list() {
+    _description "List notes for a given date"
     _param date --default "$(date +%Y-%m-%d)" --positional --help "Date to list notes for"
     _param_parse "$@" || return 1
 
@@ -51,6 +53,7 @@ note_list() {
 
 # Delete a note by id
 note_delete() {
+    _description "Delete a note by id"
     _param id --positional --required --help "The note id to delete"
     _param_parse "$@" || return 1
 
@@ -85,7 +88,9 @@ _note_complete_dates() {
 }
 
 # Register completions
-_complete_params "note_add" "Add a new note for today" "message"
-_complete_params "note_list" "List notes for a given date" "date"
-_complete_params "note_delete" "Delete a note by id" "id"
+_complete_type "note_add" action
+_complete_params "note_add" "message"
+_complete_params "note_list" "date"
+_complete_type "note_delete" action
+_complete_params "note_delete" "id"
 _complete_func "note_list" "date" _note_complete_dates

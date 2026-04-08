@@ -15,6 +15,7 @@ _ado_get_packages() {
 }
 
 ado_feed_list() {
+    _description "List Azure DevOps feeds"
     _requires az || return 1
     _param organization --default "$(_config_get ado config organization)" --help "Azure DevOps organization"
     _param_parse "$@" || return 1
@@ -33,6 +34,7 @@ ado_feed_list() {
 }
 
 ado_feed_package_list() {
+    _description "List packages in an Azure DevOps feed"
     _requires az || return 1
     _param feed         --required --help "Feed name"
     _param organization --default "$(_config_get ado config organization)" --help "Azure DevOps organization"
@@ -52,6 +54,7 @@ ado_feed_package_list() {
 }
 
 ado_feed_package_download() {
+    _description "Download latest package from Azure DevOps feed"
     _requires az || return 1
     _param package      --required --positional --help "Package name"
     _param path         --default "." --help "Download path"
@@ -80,9 +83,10 @@ ado_feed_package_download() {
 }
 
 # Register completions
-_complete_params "ado_feed_list" "List Azure DevOps feeds" "organization"
-_complete_params "ado_feed_package_list" "List packages in an Azure DevOps feed" "feed" "organization"
+_complete_params "ado_feed_list" "organization"
+_complete_params "ado_feed_package_list" "feed" "organization"
 _complete_func  "ado_feed_package_list" "feed" _ado_get_feeds
-_complete_params "ado_feed_package_download" "Download latest package from Azure DevOps feed" "package" "path" "feed" "organization"
+_complete_type "ado_feed_package_download" action
+_complete_params "ado_feed_package_download" "package" "path" "feed" "organization"
 _complete_func  "ado_feed_package_download" "feed" _ado_get_feeds
 _complete_func  "ado_feed_package_download" "package" _ado_get_packages

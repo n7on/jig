@@ -2,6 +2,7 @@
 
 # List all registered commands
 command_list() {
+    _description "List all registered tome commands"
     _param_parse "$@" || return 1
 
     _exec_python command command_docs.py "$_TOME_DIR/src" --format list \
@@ -10,6 +11,7 @@ command_list() {
 
 # Show details of a specific command
 command_show() {
+    _description "Show parameters for a tome command"
     _param name --required --positional --help "Command name"
     _param_parse "$@" || return 1
 
@@ -19,14 +21,15 @@ command_show() {
 
 # Generate markdown documentation for all commands
 command_docs() {
+    _description "Generate markdown documentation for all tome commands"
     _param_parse "$@" || return 1
 
     _exec_python command command_docs.py "$_TOME_DIR/src" --format docs --bin "tome"
 }
 
-_complete_params "command_list" "List all registered tome commands"
-_complete_params "command_show" "Show parameters for a tome command" "name"
-_complete_params "command_docs" "Generate markdown documentation for all tome commands"
+_complete_params "command_list"
+_complete_params "command_show" "name"
+_complete_params "command_docs"
 
 _command_show_complete() {
     local names=""

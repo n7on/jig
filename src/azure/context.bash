@@ -15,6 +15,7 @@ _azure_context_get_names() {
 }
 
 azure_context_list() {
+    _description "List available Azure contexts"
     _param_parse "$@" || return 1
 
     local current=""
@@ -34,6 +35,7 @@ azure_context_list() {
 }
 
 azure_context_add() {
+    _description "Create a new Azure context and log in"
     _requires az || return 1
     _param name --required --positional --help "Context name"
     _param_parse "$@" || return 1
@@ -50,6 +52,7 @@ azure_context_add() {
 }
 
 azure_context_switch() {
+    _description "Switch to a named Azure context (use 'default' to restore ~/.azure)"
     _param name --required --positional --help "Context name (or 'default')"
     _param_parse "$@" || return 1
 
@@ -68,6 +71,7 @@ azure_context_switch() {
 }
 
 azure_context_remove() {
+    _description "Remove a named Azure context"
     _param name --required --positional --help "Context name"
     _param_parse "$@" || return 1
 
@@ -87,9 +91,12 @@ azure_context_remove() {
     rm -rf "$context_path"
 }
 
-_complete_params "azure_context_list" "List available Azure contexts"
-_complete_params "azure_context_add" "Create a new Azure context and log in" name
-_complete_params "azure_context_switch" "Switch to a named Azure context (use 'default' to restore ~/.azure)" name
+_complete_params "azure_context_list"
+_complete_type "azure_context_add" action
+_complete_params "azure_context_add" name
+_complete_type "azure_context_switch" action
+_complete_params "azure_context_switch" name
 _complete_func  azure_context_switch name _azure_context_get_names
-_complete_params "azure_context_remove" "Remove a named Azure context" name
+_complete_type "azure_context_remove" action
+_complete_params "azure_context_remove" name
 _complete_func  azure_context_remove name _azure_context_get_names

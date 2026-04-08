@@ -1,4 +1,5 @@
 export_excel() {
+    _description "Convert TSV input to a formatted Excel (.xlsx) file"
     _param output --default "export.xlsx" --help "Output .xlsx file path"
     _param sheet  --default "Sheet1"      --help "Sheet name (appends if file exists)"
     _param input  --path file             --help "Input TSV file (default: stdin)"
@@ -11,4 +12,4 @@ export_excel() {
     fi
 }
 
-_complete_params "export_excel" "Convert TSV input to a formatted Excel (.xlsx) file" output sheet input
+_complete_params "export_excel" output sheet input

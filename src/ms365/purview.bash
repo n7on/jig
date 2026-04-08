@@ -1,5 +1,6 @@
 
 ms365_purview_slabel_list() {
+    _description "List Purview sensitive information labels"
     _param_parse "$@" || return 1
 
     _ms365_graph_get "https://graph.microsoft.com/beta/security/informationProtection/sensitivityLabels" \
@@ -8,6 +9,7 @@ ms365_purview_slabel_list() {
 }
 
 ms365_purview_slabel_show() {
+    _description "Show details of a Purview sensitive information label"
     _param name --required --positional --help "Label name (exact match)"
     _param_parse "$@" || return 1
 
@@ -23,6 +25,7 @@ ms365_purview_slabel_show() {
 }
 
 ms365_purview_slabel_add() {
+    _description "Create a new Purview sensitive information label"
     _param name        --required --positional --help "Label display name"
     _param description --help "Label description"
     _param tooltip     --help "Tooltip shown to users"
@@ -49,6 +52,7 @@ ms365_purview_slabel_add() {
 }
 
 ms365_purview_rlabel_list() {
+    _description "List Purview retention labels"
     _param_parse "$@" || return 1
 
     _ms365_graph_get "https://graph.microsoft.com/v1.0/security/labels/retentionLabels" \
@@ -57,6 +61,7 @@ ms365_purview_rlabel_list() {
 }
 
 ms365_purview_rlabel_show() {
+    _description "Show details of a Purview retention label"
     _param name --required --positional --help "Label display name (exact match)"
     _param_parse "$@" || return 1
 
@@ -72,6 +77,7 @@ ms365_purview_rlabel_show() {
 }
 
 ms365_purview_rlabel_add() {
+    _description "Create a new Purview retention label"
     _param name               --required --positional --help "Label display name"
     _param duration           --help "Retention period in days"
     _param trigger            --help "Retention trigger (dateLabeled, dateCreated, dateModified, dateOfEvent)"
@@ -101,11 +107,13 @@ ms365_purview_rlabel_add() {
 }
 
 # Register completions
-_complete_params "ms365_purview_slabel_list" "List Purview sensitive information labels"
-_complete_params "ms365_purview_slabel_show" "Show details of a Purview sensitive information label" "name"
-_complete_params "ms365_purview_slabel_add" "Create a new Purview sensitive information label" "name" "description" "tooltip" "color" "parent"
-_complete_params "ms365_purview_rlabel_list" "List Purview retention labels"
-_complete_params "ms365_purview_rlabel_show" "Show details of a Purview retention label" "name"
-_complete_params "ms365_purview_rlabel_add" "Create a new Purview retention label" "name" "duration" "trigger" "action" "description_admins" "description_users"
+_complete_params "ms365_purview_slabel_list"
+_complete_params "ms365_purview_slabel_show" "name"
+_complete_type "ms365_purview_slabel_add" action
+_complete_params "ms365_purview_slabel_add" "name" "description" "tooltip" "color" "parent"
+_complete_params "ms365_purview_rlabel_list"
+_complete_params "ms365_purview_rlabel_show" "name"
+_complete_type "ms365_purview_rlabel_add" action
+_complete_params "ms365_purview_rlabel_add" "name" "duration" "trigger" "action" "description_admins" "description_users"
 _complete_values "ms365_purview_rlabel_add" "trigger" "dateLabeled" "dateCreated" "dateModified" "dateOfEvent"
 _complete_values "ms365_purview_rlabel_add" "action" "none" "delete" "permanentlyDelete" "startDispositionReview"

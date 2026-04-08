@@ -58,16 +58,13 @@ def parse_file(path, module, commands):
                 }
             continue
 
-        # Parse _complete_params for description (file scope)
-        m = re.match(r'_complete_params\s+"(\w+)"\s+"([^"]+)"', line)
-        if m:
-            func_name, desc = m.group(1), m.group(2)
-            if func_name in commands:
-                commands[func_name]["description"] = desc
+        if not current_func:
             continue
 
-
-        if not current_func:
+        # Description (inside function body)
+        m = re.match(r'_description\s+"([^"]+)"', line)
+        if m:
+            commands[current_func]["description"] = m.group(1)
             continue
 
         # Parameter
