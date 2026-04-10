@@ -65,7 +65,7 @@ def main():
         ws = wb.create_sheet(title=args.sheet)
     else:
         wb = openpyxl.Workbook()
-        ws = wb.active
+        ws = wb.active or wb.create_sheet()
         ws.title = args.sheet
 
     write_sheet(ws, headers, data)

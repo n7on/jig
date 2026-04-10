@@ -12,7 +12,7 @@ _require_module() {
     # Then search installed packs
     if [[ ! -d "$dir" ]]; then
         local candidate
-        for candidate in "$HOME/.tome/volume"/*/src/"$ns"; do
+        for candidate in "$HOME/.tome/plugin"/*/src/"$ns"; do
             if [[ -d "$candidate" ]]; then
                 dir="$candidate"
                 break

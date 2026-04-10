@@ -1,17 +1,17 @@
-_VOLUME_DIR="$HOME/.tome/volume"
+_PLUGIN_DIR="$HOME/.tome/plugin"
 
-volume_install() {
-    _description "Install a volume from a git repository"
+plugin_install() {
+    _description "Install a plugin from a git repository"
     _requires git || return 1
     _param url --required --positional --help "Git repository URL"
     _param_parse "$@" || return 1
 
     local name
     name="$(basename "$url" .git)"
-    local dest="$_VOLUME_DIR/$name"
+    local dest="$_PLUGIN_DIR/$name"
 
     if [[ -d "$dest" ]]; then
-        _message_error "Volume '$name' is already installed. Use 'tome volume update $name' to update."
+        _message_error "Plugin '$name' is already installed. Use 'tome plugin update $name' to update."
         return 1
     fi
 
@@ -20,7 +20,7 @@ volume_install() {
     tmp=$(mktemp -d)
     _exec git clone "$url" "$tmp/$name" || { rm -rf "$tmp"; return 1; }
 
-    # Check for namespace conflicts with built-ins and other installed volumes
+    # Check for namespace conflicts with built-ins and other installed plugins
     local conflicts=()
     local ns_dir ns
     for ns_dir in "$tmp/$name/src"/*/; do
@@ -32,7 +32,7 @@ volume_install() {
             continue
         fi
         local existing
-        for existing in "$_VOLUME_DIR"/*/src/"$ns"; do
+        for existing in "$_PLUGIN_DIR"/*/src/"$ns"; do
             if [[ -d "$existing" ]]; then
                 conflicts+=("$ns ($(basename "$(dirname "$(dirname "$existing")")")")
                 break
@@ -46,14 +46,14 @@ volume_install() {
         return 1
     fi
 
-    mkdir -p "$_VOLUME_DIR"
+    mkdir -p "$_PLUGIN_DIR"
     mv "$tmp/$name" "$dest"
     rm -rf "$tmp"
     _message_warn "Installed: $name"
 }
 
-volume_list() {
-    _description "List installed volumes and their namespaces"
+plugin_list() {
+    _description "List installed plugins and their namespaces"
     _param_parse "$@" || return 1
 
     # Built-in namespaces
@@ -64,27 +64,27 @@ volume_list() {
         printf "%s\t%s\n" "$ns" "built-in"
     done
 
-    # Installed volumes
-    local vol_dir vol_name
-    for vol_dir in "$_VOLUME_DIR"/*/; do
-        [[ -d "$vol_dir/src" ]] || continue
-        vol_name="$(basename "$vol_dir")"
-        for ns_dir in "$vol_dir/src"/*/; do
+    # Installed plugins
+    local plugin_dir plugin_name
+    for plugin_dir in "$_PLUGIN_DIR"/*/; do
+        [[ -d "$plugin_dir/src" ]] || continue
+        plugin_name="$(basename "$plugin_dir")"
+        for ns_dir in "$plugin_dir/src"/*/; do
             ns="$(basename "$ns_dir")"
             [[ "$ns" == _* ]] && continue
-            printf "%s\t%s\n" "$ns" "$vol_name"
+            printf "%s\t%s\n" "$ns" "$plugin_name"
         done
-    done | _output_render "namespace,volume"
+    done | _output_render "namespace,plugin"
 }
 
-volume_remove() {
-    _description "Remove an installed volume"
-    _param name --required --positional --help "Volume name"
+plugin_remove() {
+    _description "Remove an installed plugin"
+    _param name --required --positional --help "Plugin name"
     _param_parse "$@" || return 1
 
-    local dest="$_VOLUME_DIR/$name"
+    local dest="$_PLUGIN_DIR/$name"
     if [[ ! -d "$dest" ]]; then
-        _message_error "Volume '$name' not found in $_VOLUME_DIR"
+        _message_error "Plugin '$name' not found in $_PLUGIN_DIR"
         return 1
     fi
 
@@ -92,19 +92,19 @@ volume_remove() {
     _message_warn "Removed: $name"
 }
 
-volume_update() {
-    _description "Update an installed volume"
+plugin_update() {
+    _description "Update an installed plugin"
     _requires git || return 1
-    _param name --positional --help "Volume name to update (omit for all)"
+    _param name --positional --help "Plugin name to update (omit for all)"
     _param_parse "$@" || return 1
 
     local targets=()
     if [[ -n "$name" ]]; then
-        [[ -d "$_VOLUME_DIR/$name" ]] || { _message_error "Volume '$name' not found"; return 1; }
-        targets=("$_VOLUME_DIR/$name")
+        [[ -d "$_PLUGIN_DIR/$name" ]] || { _message_error "Plugin '$name' not found"; return 1; }
+        targets=("$_PLUGIN_DIR/$name")
     else
         local d
-        for d in "$_VOLUME_DIR"/*/; do
+        for d in "$_PLUGIN_DIR"/*/; do
             [[ -d "$d" ]] && targets+=("$d")
         done
     fi
@@ -120,10 +120,10 @@ volume_update() {
     done
 }
 
-_complete_type "volume_install" action
-_complete_params "volume_install" "url"
-_complete_params "volume_list"
-_complete_type "volume_remove" action
-_complete_params "volume_remove" "name"
-_complete_type "volume_update" action
-_complete_params "volume_update" "name"
+_complete_type "plugin_install" action
+_complete_params "plugin_install" "url"
+_complete_params "plugin_list"
+_complete_type "plugin_remove" action
+_complete_params "plugin_remove" "name"
+_complete_type "plugin_update" action
+_complete_params "plugin_update" "name"

@@ -32,10 +32,26 @@ _complete_params "command_show" "name"
 _complete_params "command_docs"
 
 _command_show_complete() {
-    local names=""
+    # Load all namespaces to get the full command list
+    local ns_dir ns
+    for ns_dir in "$_TOME_DIR/src"/*/; do
+        ns="$(basename "$ns_dir")"
+        [[ "$ns" == _* ]] && continue
+        _require_module "$ns" 2>/dev/null
+    done
+    for _vol in "$HOME/.tome/plugin"/*/; do
+        [[ -d "$_vol/src" ]] || continue
+        for ns_dir in "$_vol/src"/*/; do
+            ns="$(basename "$ns_dir")"
+            [[ "$ns" == _* ]] && continue
+            _require_module "$ns" 2>/dev/null
+        done
+    done
+
+    local names="" _cmd
     local -A seen
     for _key in "${!_PARAMS[@]}"; do
-        local _cmd="${_key%%:*}"
+        _cmd="${_key%%:*}"
         [[ -v seen[$_cmd] ]] && continue
         [[ "$_cmd" == _* ]] && continue
         seen[$_cmd]=1
