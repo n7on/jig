@@ -1,34 +1,53 @@
 # rig
 
-A bash CLI framework for building clean, consistent command-line tools — with typed parameters, validation, output formatting, caching, and tab completion built in.
+A bash CLI framework for building clean, consistent command-line tools — with typed parameters, tab completion, output formatting, filtering, and caching built in.
+
+## Requirements
+
+- bash
+- python3 + venv
 
 ## Setup
 
-**Requirements:** bash, python3
-
 ```bash
-git clone <repo> rig
-cd rig
-bash setup.bash
+git clone https://github.com/n7on/rig ~/Source/rig
+rig setup
 ```
 
-Add to `~/.bashrc`:
+Add to `~/.bashrc` or `~/.zshrc`:
+
 ```bash
-export PATH="/path/to/rig/bin:$PATH"
-source <(rig completion bash)
+export PATH="$HOME/Source/rig/bin:$PATH"
+source <(rig completion bash)   # or zsh
 ```
 
-## Usage
+## Plugins
+
+Rig ships with only the core framework. Commands are added via plugins:
 
 ```bash
-rig nmap scan quick localhost
-rig azure context list --output json
-rig note add "my note #tag"
+rig plugin install https://github.com/n7on/rig-microsoft
+rig plugin install https://github.com/n7on/rig-note
+rig plugin install https://github.com/n7on/rig-export
+rig plugin install https://github.com/n7on/rig-general
+```
+
+List installed plugins:
+
+```bash
+rig plugin list
+```
+
+Update or remove:
+
+```bash
+rig plugin update
+rig plugin remove rig-note
 ```
 
 ## Output formats
 
-All commands support `--output`:
+All commands support `--output_format`:
 
 | Format | Description |
 | --- | --- |
@@ -38,30 +57,24 @@ All commands support `--output`:
 | `md` | Markdown table |
 | `raw` | Unprocessed output |
 
-## Output pipeline
-
-All commands support these flags to slice and filter results:
+## Filtering and sorting
 
 ```bash
-rig azure context list --filter name=prod       # exact match (wildcards supported)
-rig azure context list --filter name~prod       # contains match
-rig azure context list --sort -name             # sort descending
-rig azure context list --select name,id         # pick columns
-rig azure context list --limit 10               # first N rows
+rig plugin list --filter plugin=built-in
+rig plugin list --filter namespace~az
+rig plugin list --sort namespace
+rig plugin list --select namespace
+rig plugin list --limit 5
 ```
 
 ## Caching
 
 ```bash
-rig azure graph query my_query --cache          # cache for 300s (default)
-rig azure graph query my_query --cache 3600     # cache for 1 hour
-rig cache clear                                 # clear all cached results
+rig <command> --cache          # cache for 300s (default)
+rig <command> --cache 3600     # cache for 1 hour
+rig cache clear                # clear all cached results
 ```
 
-## Available commands
+## Writing plugins
 
-See [COMMANDS.md](COMMANDS.md) for the full command reference.
-
-## Adding commands
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new modules and commands.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
