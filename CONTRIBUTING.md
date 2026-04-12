@@ -4,8 +4,8 @@
 
 ```
 setup.bash              — one-time setup (creates venv, installs Python deps)
-bin/tome                — binary entry point
-init.bash               — sources all modules (used by bin/tome)
+bin/rig                — binary entry point
+init.bash               — sources all modules (used by bin/rig)
 src/
 ├── _cache/             — cache implementation
 ├── _complete/          — completion registration
@@ -18,7 +18,7 @@ src/
 src/<namespace>/        — command modules (azure/, nmap/, note/, ...)
 ├── <module>.bash       — command definitions
 └── python/             — Python scripts called from commands
-~/.tome/
+~/.rig/
 ├── <namespace>/        — per-module config files (JSON)
 └── .cache/             — cached command output
 ```
@@ -149,18 +149,18 @@ _exec_python weather forecast.py "$location" "$days" \
     | _output_render
 ```
 
-Scripts should write TSV (with a header row) to stdout. Use `print(..., file=sys.stderr)` for warnings — tome will show them only on failure or with `--debug`.
+Scripts should write TSV (with a header row) to stdout. Use `print(..., file=sys.stderr)` for warnings — rig will show them only on failure or with `--debug`.
 
 ## Module config files
 
-For modules that need configuration, store it as JSON in `~/.tome/<namespace>/<module>.json`. Use `_config_init` to create it from an example on first use:
+For modules that need configuration, store it as JSON in `~/.rig/<namespace>/<module>.json`. Use `_config_init` to create it from an example on first use:
 
 ```bash
 # At file scope in your module
 _config_init weather config
 ```
 
-This copies `src/weather/config.json.example` to `~/.tome/weather/config.json` on first use.
+This copies `src/weather/config.json.example` to `~/.rig/weather/config.json` on first use.
 
 Read and write config values with:
 

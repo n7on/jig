@@ -1,11 +1,11 @@
-# Tome Commands
+# rig Commands
 
-Tome is a bash CLI framework. Run commands using `tome`:
+rig is a bash CLI framework. Run commands using `rig`:
 
 ```bash
-tome nmap scan quick localhost
-tome azure graph query my_query --output json
-tome note add "my note #tag"
+rig nmap scan quick localhost
+rig azure graph query my_query --output json
+rig note add "my note #tag"
 ```
 
 ## ado
@@ -91,15 +91,15 @@ Query Azure Log Analytics workspace using a saved KQL file
 
 ### `command docs`
 
-Generate markdown documentation for all tome commands
+Generate markdown documentation for all rig commands
 
 ### `command list`
 
-List all registered tome commands
+List all registered rig commands
 
 ### `command show`
 
-Show parameters for a tome command
+Show parameters for a rig command
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -109,13 +109,13 @@ Show parameters for a tome command
 
 ### `completion bash`
 
-Generate bash completion script for the tome binary
+Generate bash completion script for the rig binary
 
 ## deps
 
 ### `deps`
 
-List all external dependencies across tome modules
+List all external dependencies across rig modules
 
 ## entra
 
@@ -471,7 +471,7 @@ Display piped input in a floating tmux popup
 | Parameter | Required | Description |
 | --- | --- | --- |
 | `--height` |  | Popup height (rows or percentage). Default: `60%` |
-| `--title` |  | Popup title. Default: `tome` |
+| `--title` |  | Popup title. Default: `rig` |
 | `--width` |  | Popup width (columns or percentage). Default: `80%` |
 
 ## Framework Parameters

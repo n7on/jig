@@ -1,5 +1,6 @@
 # Module loading - idempotent, searches built-in and installed locations
 declare -gA _LOADED_MODULES
+declare -gA _MODULE_PATH
 
 _require_module() {
     local ns="$1"
@@ -24,6 +25,8 @@ _require_module() {
         echo "rig: module '$ns' not found (required by ${BASH_SOURCE[1]:-unknown})" >&2
         return 1
     fi
+
+    _MODULE_PATH["$ns"]="$dir"
 
     local f
     for f in "$dir"/*.bash; do

@@ -43,3 +43,30 @@ _config_set() {
     fi
     json_set --file "$config_file" --key "$3" --value "$4" || return 1
 }
+
+# Append an item to a JSON array config file
+# Usage: _config_append <namespace> <module> <json-object>
+_config_append() {
+    local config_file
+    config_file=$(_config_file "$1" "$2")
+    mkdir -p "$(dirname "$config_file")"
+    json_append --file "$config_file" --item "$3"
+}
+
+# Remove matching items from a JSON array config file
+# Usage: _config_remove <namespace> <module> <field> <value>
+_config_remove() {
+    local config_file
+    config_file=$(_config_file "$1" "$2")
+    [[ -f "$config_file" ]] || return 0
+    json_remove --file "$config_file" --match "$3" --value "$4"
+}
+
+# Read a JSON array config file as TSV
+# Usage: _config_list <namespace> <module> <fields>
+_config_list() {
+    local config_file
+    config_file=$(_config_file "$1" "$2")
+    [[ -f "$config_file" ]] || return 0
+    cat "$config_file" | json_tsv --path '.' --fields "$3"
+}

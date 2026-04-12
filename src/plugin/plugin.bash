@@ -1,19 +1,7 @@
 _PLUGIN_DIR="$HOME/.rig/plugin"
 
-plugin_install() {
-    _description "Install a plugin from a git repository"
-    _requires git || return 1
-    _param url --required --positional --help "Git repository URL"
-    _param_parse "$@" || return 1
-
-    local name
-    name="$(basename "$url" .git)"
-    local dest="$_PLUGIN_DIR/$name"
-
-    if [[ -d "$dest" ]]; then
-        _message_error "Plugin '$name' is already installed. Use 'rig plugin update $name' to update."
-        return 1
-    fi
+_plugin_install_dir() {
+    local name="$1" url="$2" dest="$3"
 
     # Clone to a temp location first so we can check for conflicts
     local tmp
@@ -46,9 +34,35 @@ plugin_install() {
         return 1
     fi
 
-    mkdir -p "$_PLUGIN_DIR"
     mv "$tmp/$name" "$dest"
     rm -rf "$tmp"
+
+    if [[ -f "$dest/requirements.txt" ]]; then
+        echo "Installing Python dependencies for $name..."
+        "$HOME/.rig/.venv/bin/pip" install --quiet --disable-pip-version-check \
+            -r "$dest/requirements.txt"
+    fi
+}
+
+plugin_install() {
+    _description "Install a plugin from a git repository"
+    _requires git || return 1
+    _param url --required --positional --help "Git repository URL"
+    _param_parse "$@" || return 1
+
+    local name
+    name="$(basename "$url" .git)"
+    local dest="$_PLUGIN_DIR/$name"
+
+    if [[ -d "$dest" ]]; then
+        _message_error "Plugin '$name' is already installed. Use 'rig plugin update $name' to update."
+        return 1
+    fi
+
+    mkdir -p "$_PLUGIN_DIR"
+    _plugin_install_dir "$name" "$url" "$dest" || return 1
+
+    _config_append "plugin" "plugins" "$(json_build "name=$name" "url=$url")"
     _message_warn "Installed: $name"
 }
 
@@ -56,25 +70,27 @@ plugin_list() {
     _description "List installed plugins and their namespaces"
     _param_parse "$@" || return 1
 
-    # Built-in namespaces
-    local ns_dir ns
-    for ns_dir in "$_RIG_DIR/src"/*/; do
-        ns="$(basename "$ns_dir")"
-        [[ "$ns" == _* ]] && continue
-        printf "%s\t%s\n" "$ns" "built-in"
-    done
-
-    # Installed plugins
-    local plugin_dir plugin_name
-    for plugin_dir in "$_PLUGIN_DIR"/*/; do
-        [[ -d "$plugin_dir/src" ]] || continue
-        plugin_name="$(basename "$plugin_dir")"
-        for ns_dir in "$plugin_dir/src"/*/; do
+    {
+        # Built-in namespaces
+        local ns_dir ns
+        for ns_dir in "$_RIG_DIR/src"/*/; do
             ns="$(basename "$ns_dir")"
             [[ "$ns" == _* ]] && continue
-            printf "%s\t%s\n" "$ns" "$plugin_name"
+            printf "%s\t%s\n" "$ns" "built-in"
         done
-    done | _output_render "namespace,plugin"
+
+        # Installed plugins
+        local plugin_dir plugin_name
+        for plugin_dir in "$_PLUGIN_DIR"/*/; do
+            [[ -d "$plugin_dir/src" ]] || continue
+            plugin_name="$(basename "$plugin_dir")"
+            for ns_dir in "$plugin_dir/src"/*/; do
+                ns="$(basename "$ns_dir")"
+                [[ "$ns" == _* ]] && continue
+                printf "%s\t%s\n" "$ns" "$plugin_name"
+            done
+        done
+    } | _output_render "namespace,plugin"
 }
 
 plugin_remove() {
@@ -89,6 +105,7 @@ plugin_remove() {
     fi
 
     rm -rf "$dest"
+    _config_remove "plugin" "plugins" "name" "$name"
     _message_warn "Removed: $name"
 }
 
@@ -116,7 +133,13 @@ plugin_update() {
             _message_error "'$n' is not a git repository"
             continue
         fi
-        _exec git -C "$dir" pull --quiet && _message_warn "Updated: $n"
+        if _exec git -C "$dir" pull --quiet; then
+            if [[ -f "$dir/requirements.txt" ]]; then
+                "$HOME/.rig/.venv/bin/pip" install --quiet --disable-pip-version-check \
+                    -r "$dir/requirements.txt"
+            fi
+            _message_warn "Updated: $n"
+        fi
     done
 }
 

@@ -70,11 +70,12 @@ _exec_python() {
     shift 2
 
     if [[ ! -x "$_RIG_PYTHON" ]]; then
-        _message_error "Python venv not found. Run setup.bash first."
+        _message_error "Python venv not found. Run 'rig setup' first."
         return 1
     fi
 
-    local script_path="$_RIG_DIR/src/$namespace/python/$script"
+    local ns_dir="${_MODULE_PATH[$namespace]:-$_RIG_DIR/src/$namespace}"
+    local script_path="$ns_dir/python/$script"
     if [[ ! -f "$script_path" ]]; then
         _message_error "Python script not found: $script_path"
         return 1

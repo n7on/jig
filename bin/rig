@@ -4,7 +4,7 @@
 #        tome nmap scan quick localhost
 
 _RIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-_RIG_PYTHON="$_RIG_DIR/.venv/bin/python3"
+_RIG_PYTHON="$HOME/.rig/.venv/bin/python3"
 
 # Source all _* framework dirs
 _rig_source_framework() {
