@@ -1,11 +1,20 @@
 # Introspection commands for rig
 
+# Collect all src dirs: core + installed packs
+_command_src_dirs() {
+    echo "$_RIG_DIR/src"
+    local repo
+    for repo in "$HOME/.rig/pack"/*/; do
+        [[ -d "$repo/src" ]] && echo "$repo/src"
+    done
+}
+
 # List all registered commands
 command_list() {
     _description "List all registered rig commands"
     _param_parse "$@" || return 1
 
-    _exec_python command command_docs.py "$_RIG_DIR/src" --format list \
+    _exec_python command command_docs.py $(_command_src_dirs) --format list \
         | _output_render
 }
 
@@ -15,7 +24,7 @@ command_show() {
     _param name --required --positional --help "Command name"
     _param_parse "$@" || return 1
 
-    _exec_python command command_docs.py "$_RIG_DIR/src" --format show --command "$name" \
+    _exec_python command command_docs.py $(_command_src_dirs) --format show --command "$name" \
         | _output_render
 }
 
@@ -24,7 +33,7 @@ command_docs() {
     _description "Generate markdown documentation for all rig commands"
     _param_parse "$@" || return 1
 
-    _exec_python command command_docs.py "$_RIG_DIR/src" --format docs --bin "rig"
+    _exec_python command command_docs.py $(_command_src_dirs) --format docs --bin "rig"
 }
 
 _complete_params "command_list"

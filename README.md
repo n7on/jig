@@ -75,6 +75,33 @@ rig <command> --cache 3600     # cache for 1 hour
 rig cache clear                # clear all cached results
 ```
 
+## Syncing ~/.rig across machines
+
+`~/.rig` holds your config, notes, and pack manifest. You can back it up and sync it across machines using a private git repo.
+
+**One-time setup:**
+
+```bash
+git -C ~/.rig init
+git -C ~/.rig remote add origin git@github.com:you/dotfiles.git
+git -C ~/.rig add .
+git -C ~/.rig commit -m "init"
+git -C ~/.rig push -u origin main
+```
+
+**Ongoing sync:**
+
+```bash
+rig sync
+```
+
+**New machine:**
+
+```bash
+git clone git@github.com:you/dotfiles.git ~/.rig
+rig setup   # recreates venv and reinstalls all packs
+```
+
 ## Writing packs
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

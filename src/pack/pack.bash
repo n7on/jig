@@ -1,3 +1,5 @@
+_require_module "json"
+
 _PACK_DIR="$HOME/.rig/pack"
 
 _pack_install_dir() {
@@ -143,10 +145,19 @@ pack_update() {
     done
 }
 
+_pack_complete_name() {
+    local d
+    for d in "$_PACK_DIR"/*/; do
+        [[ -d "$d" ]] && basename "$d"
+    done
+}
+
 _complete_type "pack_install" action
 _complete_params "pack_install" "url"
 _complete_params "pack_list"
 _complete_type "pack_remove" action
 _complete_params "pack_remove" "name"
+_complete_func "pack_remove" "name" _pack_complete_name
 _complete_type "pack_update" action
 _complete_params "pack_update" "name"
+_complete_func "pack_update" "name" _pack_complete_name

@@ -13,9 +13,20 @@ import re
 import sys
 
 
+def pack_name_from_src_dir(src_dir):
+    """Infer pack name from src dir path, or 'built-in' for core."""
+    parts = os.path.normpath(src_dir).split(os.sep)
+    try:
+        idx = parts.index("pack")
+        return parts[idx + 1]
+    except (ValueError, IndexError):
+        return "built-in"
+
+
 def parse_source_files(src_dir):
     """Parse all bash files to extract command metadata."""
     commands = {}
+    pack = pack_name_from_src_dir(src_dir)
 
     for root, dirs, files in os.walk(src_dir):
         # Skip _* framework dirs
@@ -26,12 +37,12 @@ def parse_source_files(src_dir):
                 continue
             path = os.path.join(root, fname)
             module = os.path.basename(root)
-            parse_file(path, module, commands)
+            parse_file(path, module, pack, commands)
 
     return commands
 
 
-def parse_file(path, module, commands):
+def parse_file(path, module, pack, commands):
     """Parse a single bash file for command metadata."""
     with open(path) as f:
         lines = f.readlines()
@@ -53,6 +64,7 @@ def parse_file(path, module, commands):
                 commands[name] = {
                     "name": name,
                     "module": module,
+                    "pack": pack,
                     "description": "",
                     "params": [],
                 }
@@ -102,10 +114,10 @@ def parse_file(path, module, commands):
 
 def format_list_tsv(commands):
     """Output command list as TSV with headers."""
-    print("command,module,description")
+    print("command,module,pack,description")
     for cmd in sorted(commands.values(), key=lambda c: c["name"]):
         display = cmd["name"].replace("_", " ")
-        print(f"{display}\t{cmd['module']}\t{cmd['description']}")
+        print(f"{display}\t{cmd['module']}\t{cmd['pack']}\t{cmd['description']}")
 
 
 def format_show_tsv(cmd):
@@ -117,15 +129,9 @@ def format_show_tsv(cmd):
 
 def format_docs_md(commands, bin="rig"):
     """Output full markdown documentation."""
-    print("# Grim Commands")
+    print("# Commands")
     print()
-    print(f"Grim is a bash CLI framework. Run commands using `{bin}`:")
-    print()
-    print("```bash")
-    print(f"{bin} nmap scan quick localhost")
-    print(f"{bin} azure graph query my_query --output json")
-    print(f"{bin} note add \"my note #tag\"")
-    print("```")
+    print(f"Run commands using `{bin}`:")
     print()
 
     # Group by module
@@ -181,13 +187,15 @@ def format_docs_md(commands, bin="rig"):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("src_dir")
+    parser.add_argument("src_dirs", nargs="+")
     parser.add_argument("--format", default="list", choices=["list", "show", "docs"])
     parser.add_argument("--command", default=None)
     parser.add_argument("--bin", default="rig", dest="bin")
     args = parser.parse_args()
 
-    commands = parse_source_files(args.src_dir)
+    commands = {}
+    for src_dir in args.src_dirs:
+        commands.update(parse_source_files(src_dir))
 
     if args.format == "list":
         format_list_tsv(commands)

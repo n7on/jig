@@ -19,6 +19,16 @@ setup() {
 
     mkdir -p "$HOME/.rig"
 
+    # Create .gitignore if missing
+    local gitignore="$HOME/.rig/.gitignore"
+    if [[ ! -f "$gitignore" ]]; then
+        cat > "$gitignore" <<'EOF'
+pack/*/
+.venv/
+.cache/
+EOF
+    fi
+
     echo "Creating venv at $_RIG_VENV..."
     python3 -m venv "$_RIG_VENV"
 
