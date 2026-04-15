@@ -1,17 +1,17 @@
-# Introspection commands for rig
+# Introspection commands for jig
 
 # Collect all src dirs: core + installed packs
 _command_src_dirs() {
-    echo "$_RIG_DIR/src"
+    echo "$_JIG_DIR/src"
     local repo
-    for repo in "$HOME/.rig/pack"/*/; do
+    for repo in "$HOME/.jig/pack"/*/; do
         [[ -d "$repo/src" ]] && echo "$repo/src"
     done
 }
 
 # List all registered commands
 command_list() {
-    _description "List all registered rig commands"
+    _description "List all registered jig commands"
     _param_parse "$@" || return 1
 
     _exec_python command command_docs.py $(_command_src_dirs) --format list \
@@ -20,7 +20,7 @@ command_list() {
 
 # Show details of a specific command
 command_show() {
-    _description "Show parameters for a rig command"
+    _description "Show parameters for a jig command"
     _param name --required --positional --help "Command name"
     _param_parse "$@" || return 1
 
@@ -30,10 +30,10 @@ command_show() {
 
 # Generate markdown documentation for all commands
 command_docs() {
-    _description "Generate markdown documentation for all rig commands"
+    _description "Generate markdown documentation for all jig commands"
     _param_parse "$@" || return 1
 
-    _exec_python command command_docs.py $(_command_src_dirs) --format docs --bin "rig"
+    _exec_python command command_docs.py $(_command_src_dirs) --format docs --bin "jig"
 }
 
 _complete_params "command_list"
@@ -43,12 +43,12 @@ _complete_params "command_docs"
 _command_show_complete() {
     # Load all namespaces to get the full command list
     local ns_dir ns
-    for ns_dir in "$_RIG_DIR/src"/*/; do
+    for ns_dir in "$_JIG_DIR/src"/*/; do
         ns="$(basename "$ns_dir")"
         [[ "$ns" == _* ]] && continue
         _require_module "$ns" 2>/dev/null
     done
-    for _vol in "$HOME/.rig/pack"/*/; do
+    for _vol in "$HOME/.jig/pack"/*/; do
         [[ -d "$_vol/src" ]] || continue
         for ns_dir in "$_vol/src"/*/; do
             ns="$(basename "$ns_dir")"

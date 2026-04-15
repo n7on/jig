@@ -1,4 +1,4 @@
-# rig
+# jig
 
 A bash CLI framework for building clean, consistent command-line tools — with typed parameters, tab completion, output formatting, filtering, and caching built in.
 
@@ -10,39 +10,39 @@ A bash CLI framework for building clean, consistent command-line tools — with 
 ## Setup
 
 ```bash
-git clone https://github.com/n7on/rig ~/Source/rig
-rig setup
+git clone https://github.com/n7on/jig ~/source/jig
+jig setup
 ```
 
 Add to `~/.bashrc` or `~/.zshrc`:
 
 ```bash
-export PATH="$HOME/Source/rig/bin:$PATH"
-source <(rig completion bash)   # or zsh
+export PATH="$HOME/source/jig/bin:$PATH"
+source <(jig completion bash)   # or zsh
 ```
 
 ## Plugins
 
-Rig ships with only the core framework. Commands are added via packs:
+Jig ships with only the core framework. Commands are added via packs:
 
 ```bash
-rig pack install https://github.com/n7on/rig-microsoft
-rig pack install https://github.com/n7on/rig-note
-rig pack install https://github.com/n7on/rig-export
-rig pack install https://github.com/n7on/rig-general
+jig pack install https://github.com/n7on/jig-microsoft
+jig pack install https://github.com/n7on/jig-note
+jig pack install https://github.com/n7on/jig-export
+jig pack install https://github.com/n7on/jig-general
 ```
 
 List installed packs:
 
 ```bash
-rig pack list
+jig pack list
 ```
 
 Update or remove:
 
 ```bash
-rig pack update
-rig pack remove rig-note
+jig pack update
+jig pack remove jig-note
 ```
 
 ## Output formats
@@ -60,46 +60,46 @@ All commands support `--output_format`:
 ## Filtering and sorting
 
 ```bash
-rig pack list --filter pack=built-in
-rig pack list --filter namespace~az
-rig pack list --sort namespace
-rig pack list --select namespace
-rig pack list --limit 5
+jig pack list --filter pack=built-in
+jig pack list --filter namespace~az
+jig pack list --sort namespace
+jig pack list --select namespace
+jig pack list --limit 5
 ```
 
 ## Caching
 
 ```bash
-rig <command> --cache          # cache for 300s (default)
-rig <command> --cache 3600     # cache for 1 hour
-rig cache clear                # clear all cached results
+jig <command> --cache          # cache for 300s (default)
+jig <command> --cache 3600     # cache for 1 hour
+jig cache clear                # clear all cached results
 ```
 
-## Syncing ~/.rig across machines
+## Syncing ~/.jig across machines
 
-`~/.rig` holds your config, notes, and pack manifest. You can back it up and sync it across machines using a private git repo.
+`~/.jig` holds your config, notes, and pack manifest. You can back it up and sync it across machines using a private git repo.
 
 **One-time setup:**
 
 ```bash
-git -C ~/.rig init
-git -C ~/.rig remote add origin git@github.com:you/dotfiles.git
-git -C ~/.rig add .
-git -C ~/.rig commit -m "init"
-git -C ~/.rig push -u origin main
+git -C ~/.jig init
+git -C ~/.jig remote add origin <your jig home repo>
+git -C ~/.jig add .
+git -C ~/.jig commit -m "init"
+git -C ~/.jig push -u origin main
 ```
 
 **Ongoing sync:**
 
 ```bash
-rig sync
+jig sync
 ```
 
 **New machine:**
 
 ```bash
-git clone git@github.com:you/dotfiles.git ~/.rig
-rig setup   # recreates venv and reinstalls all packs
+git clone <your jig home repo>
+jig setup   # recreates venv and reinstalls all packs
 ```
 
 ## Writing packs

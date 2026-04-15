@@ -1,5 +1,5 @@
-# Cache management for rig commands
-_CACHE_DIR="${HOME}/.rig/.cache"
+# Cache management for jig commands
+_CACHE_DIR="${HOME}/.jig/.cache"
 
 # Generate a cache key from arguments
 # Usage: _cache_key "func_name" "arg1" "arg2"

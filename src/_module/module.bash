@@ -8,12 +8,12 @@ _require_module() {
     _LOADED_MODULES["$ns"]=1
 
     # Search built-in modules first
-    local dir="$_RIG_DIR/src/$ns"
+    local dir="$_JIG_DIR/src/$ns"
 
     # Then search installed packs
     if [[ ! -d "$dir" ]]; then
         local candidate
-        for candidate in "$HOME/.rig/pack"/*/src/"$ns"; do
+        for candidate in "$HOME/.jig/pack"/*/src/"$ns"; do
             if [[ -d "$candidate" ]]; then
                 dir="$candidate"
                 break
@@ -22,7 +22,7 @@ _require_module() {
     fi
 
     if [[ ! -d "$dir" ]]; then
-        echo "rig: module '$ns' not found (required by ${BASH_SOURCE[1]:-unknown})" >&2
+        echo "jig: module '$ns' not found (required by ${BASH_SOURCE[1]:-unknown})" >&2
         return 1
     fi
 

@@ -1,6 +1,6 @@
 _require_module "json"
 
-_PACK_DIR="$HOME/.rig/pack"
+_PACK_DIR="$HOME/.jig/pack"
 
 _pack_install_dir() {
     local name="$1" url="$2" dest="$3"
@@ -17,7 +17,7 @@ _pack_install_dir() {
         [[ -d "$ns_dir" ]] || continue
         ns="$(basename "$ns_dir")"
         [[ "$ns" == _* ]] && continue
-        if [[ -d "$_RIG_DIR/src/$ns" ]]; then
+        if [[ -d "$_JIG_DIR/src/$ns" ]]; then
             conflicts+=("$ns (built-in)")
             continue
         fi
@@ -41,7 +41,7 @@ _pack_install_dir() {
 
     if [[ -f "$dest/requirements.txt" ]]; then
         echo "Installing Python dependencies for $name..."
-        "$HOME/.rig/.venv/bin/pip" install --quiet --disable-pip-version-check \
+        "$HOME/.jig/.venv/bin/pip" install --quiet --disable-pip-version-check \
             -r "$dest/requirements.txt"
     fi
 }
@@ -57,7 +57,7 @@ pack_install() {
     local dest="$_PACK_DIR/$name"
 
     if [[ -d "$dest" ]]; then
-        _message_error "Pack '$name' is already installed. Use 'rig pack update $name' to update."
+        _message_error "Pack '$name' is already installed. Use 'jig pack update $name' to update."
         return 1
     fi
 
@@ -75,7 +75,7 @@ pack_list() {
     {
         # Built-in namespaces
         local ns_dir ns
-        for ns_dir in "$_RIG_DIR/src"/*/; do
+        for ns_dir in "$_JIG_DIR/src"/*/; do
             ns="$(basename "$ns_dir")"
             [[ "$ns" == _* ]] && continue
             printf "%s\t%s\n" "$ns" "built-in"
@@ -137,7 +137,7 @@ pack_update() {
         fi
         if _exec git -C "$dir" pull --quiet; then
             if [[ -f "$dir/requirements.txt" ]]; then
-                "$HOME/.rig/.venv/bin/pip" install --quiet --disable-pip-version-check \
+                "$HOME/.jig/.venv/bin/pip" install --quiet --disable-pip-version-check \
                     -r "$dir/requirements.txt"
             fi
             _message_warn "Updated: $n"

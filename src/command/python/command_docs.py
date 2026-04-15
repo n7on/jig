@@ -1,4 +1,4 @@
-"""Generate command documentation from rig source files.
+"""Generate command documentation from jig source files.
 
 Parses bash files for _description, _param,
 and _complete_params calls to build command metadata.
@@ -127,7 +127,7 @@ def format_show_tsv(cmd):
         print(f"{p['name']}\t{'yes' if p['required'] else ''}\t{'yes' if p['positional'] else ''}\t{p['default']}\t{p['help']}")
 
 
-def format_docs_md(commands, bin="rig"):
+def format_docs_md(commands, bin="jig"):
     """Output full markdown documentation."""
     print("# Commands")
     print()
@@ -190,7 +190,7 @@ def main():
     parser.add_argument("src_dirs", nargs="+")
     parser.add_argument("--format", default="list", choices=["list", "show", "docs"])
     parser.add_argument("--command", default=None)
-    parser.add_argument("--bin", default="rig", dest="bin")
+    parser.add_argument("--bin", default="jig", dest="bin")
     args = parser.parse_args()
 
     commands = {}

@@ -1,10 +1,10 @@
 _require_module "pack"
 _require_module "json"
 
-_RIG_VENV="$HOME/.rig/.venv"
+_JIG_VENV="$HOME/.jig/.venv"
 
 setup() {
-    _description "Set up rig: create venv, install dependencies and packs"
+    _description "Set up jig: create venv, install dependencies and packs"
     _param_parse "$@" || return 1
 
     if ! command -v python3 &>/dev/null; then
@@ -17,10 +17,10 @@ setup() {
         return 1
     fi
 
-    mkdir -p "$HOME/.rig"
+    mkdir -p "$HOME/.jig"
 
     # Create .gitignore if missing
-    local gitignore="$HOME/.rig/.gitignore"
+    local gitignore="$HOME/.jig/.gitignore"
     if [[ ! -f "$gitignore" ]]; then
         cat > "$gitignore" <<'EOF'
 pack/*/
@@ -29,13 +29,13 @@ pack/*/
 EOF
     fi
 
-    echo "Creating venv at $_RIG_VENV..."
-    python3 -m venv "$_RIG_VENV"
+    echo "Creating venv at $_JIG_VENV..."
+    python3 -m venv "$_JIG_VENV"
 
-    if [[ -f "$_RIG_DIR/requirements.txt" ]]; then
+    if [[ -f "$_JIG_DIR/requirements.txt" ]]; then
         echo "Installing core dependencies..."
-        "$_RIG_VENV/bin/pip" install --quiet --disable-pip-version-check \
-            -r "$_RIG_DIR/requirements.txt"
+        "$_JIG_VENV/bin/pip" install --quiet --disable-pip-version-check \
+            -r "$_JIG_DIR/requirements.txt"
     fi
 
     # Reinstall packs from manifest
@@ -56,8 +56,8 @@ EOF
     echo ""
     echo "Setup complete. Add to your .bashrc or .zshrc:"
     echo ""
-    echo "  export PATH=\"\$HOME/Source/rig/bin:\$PATH\""
-    echo "  source <(rig completion bash)   # or zsh"
+    echo "  export PATH=\"\$HOME/source/jig/bin:\$PATH\""
+    echo "  source <(jig completion bash)   # or zsh"
 }
 
 _complete_type "setup" action

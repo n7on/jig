@@ -1,9 +1,9 @@
-# Writing a rig pack
+# Writing a jig pack
 
 A pack is a git repository with the following layout:
 
 ```
-rig-weather/
+jig-weather/
 ├── src/
 │   └── weather/
 │       ├── weather.bash
@@ -14,13 +14,13 @@ rig-weather/
 Install it with:
 
 ```bash
-rig pack install https://github.com/you/rig-weather
+jig pack install https://github.com/you/jig-weather
 ```
 
 ## Project structure (core reference)
 
 ```
-bin/rig                — binary entry point
+bin/jig                — binary entry point
 src/
 ├── _cache/             — cache implementation
 ├── _complete/          — completion registration
@@ -31,7 +31,7 @@ src/
 ├── _output/            — output rendering (table, json, tsv, md, raw)
 │   └── python/         — render.py
 └── _param/             — parameter declaration and parsing
-~/.rig/
+~/.jig/
 ├── pack/               — installed packs
 ├── <namespace>/        — per-module config files (JSON)
 └── .cache/             — cached command output
@@ -145,14 +145,14 @@ Scripts should write TSV (with a header row) to stdout. Use `print(..., file=sys
 
 ## Module config
 
-For commands that need configuration, store it as JSON in `~/.rig/<namespace>/<module>.json`. Use `_config_init` to create it from an example on first use:
+For commands that need configuration, store it as JSON in `~/.jig/<namespace>/<module>.json`. Use `_config_init` to create it from an example on first use:
 
 ```bash
 # At file scope in your module
 _config_init weather config
 ```
 
-This copies `src/weather/config.json.example` to `~/.rig/weather/config.json` on first use.
+This copies `src/weather/config.json.example` to `~/.jig/weather/config.json` on first use.
 
 Read and write config values with:
 
@@ -197,9 +197,9 @@ _complete_func   "weather_forecast" "location" _weather_complete_location
 ```
 
 ```bash
-rig weather forecast London                          # table (default)
-rig weather forecast London --output_format json     # JSON array
-rig weather forecast London --days 7 --filter max~2  # filtered
-rig weather forecast London --cache 3600             # cached for 1 hour
-rig weather forecast --help                          # show parameter help
+jig weather forecast London                          # table (default)
+jig weather forecast London --output_format json     # JSON array
+jig weather forecast London --days 7 --filter max~2  # filtered
+jig weather forecast London --cache 3600             # cached for 1 hour
+jig weather forecast --help                          # show parameter help
 ```

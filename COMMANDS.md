@@ -1,11 +1,11 @@
-# rig Commands
+# jig Commands
 
-rig is a bash CLI framework. Run commands using `rig`:
+jig is a bash CLI framework. Run commands using `jig`:
 
 ```bash
-rig nmap scan quick localhost
-rig azure graph query my_query --output json
-rig note add "my note #tag"
+jig nmap scan quick localhost
+jig azure graph query my_query --output json
+jig note add "my note #tag"
 ```
 
 ## ado
@@ -91,15 +91,15 @@ Query Azure Log Analytics workspace using a saved KQL file
 
 ### `command docs`
 
-Generate markdown documentation for all rig commands
+Generate markdown documentation for all jig commands
 
 ### `command list`
 
-List all registered rig commands
+List all registered jig commands
 
 ### `command show`
 
-Show parameters for a rig command
+Show parameters for a jig command
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -109,13 +109,13 @@ Show parameters for a rig command
 
 ### `completion bash`
 
-Generate bash completion script for the rig binary
+Generate bash completion script for the jig binary
 
 ## deps
 
 ### `deps`
 
-List all external dependencies across rig modules
+List all external dependencies across jig modules
 
 ## entra
 

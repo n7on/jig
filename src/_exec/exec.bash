@@ -69,12 +69,12 @@ _exec_python() {
     local script="$2"
     shift 2
 
-    if [[ ! -x "$_RIG_PYTHON" ]]; then
-        _message_error "Python venv not found. Run 'rig setup' first."
+    if [[ ! -x "$_JIG_PYTHON" ]]; then
+        _message_error "Python venv not found. Run 'jig setup' first."
         return 1
     fi
 
-    local ns_dir="${_MODULE_PATH[$namespace]:-$_RIG_DIR/src/$namespace}"
+    local ns_dir="${_MODULE_PATH[$namespace]:-$_JIG_DIR/src/$namespace}"
     local script_path="$ns_dir/python/$script"
     if [[ ! -f "$script_path" ]]; then
         _message_error "Python script not found: $script_path"
@@ -84,7 +84,7 @@ _exec_python() {
     local stderr_file
     stderr_file=$(mktemp)
 
-    _cache_wrap "${cache:-0}" "$_RIG_PYTHON" "$script_path" "$@" 2>"$stderr_file"
+    _cache_wrap "${cache:-0}" "$_JIG_PYTHON" "$script_path" "$@" 2>"$stderr_file"
 
     local rc=$?
     _exec_stderr "$stderr_file" "$rc"

@@ -1,4 +1,4 @@
-# Completion registration for rig commands
+# Completion registration for jig commands
 declare -gA _COMPLETERS
 declare -gA _COMPLETER_FUNCS
 declare -gA _PARAMS
