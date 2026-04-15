@@ -1,0 +1,26 @@
+[
+    {
+        "name": "jig-microsoft",
+        "url": "https://github.com/n7on/jig-microsoft",
+        "description": "Azure, Entra, MS365 and Azure DevOps commands",
+        "modules": ["ado", "azure", "entra", "ms365"]
+    },
+    {
+        "name": "jig-note",
+        "url": "https://github.com/n7on/jig-note",
+        "description": "Daily JSON-backed notes synced via git",
+        "modules": ["note"]
+    },
+    {
+        "name": "jig-export",
+        "url": "https://github.com/n7on/jig-export",
+        "description": "Export command output to file formats like Excel",
+        "modules": ["export"]
+    },
+    {
+        "name": "jig-tools",
+        "url": "https://github.com/n7on/jig-tools",
+        "description": "tmux popup/pane helpers and misc CLI tools",
+        "modules": ["nmap", "openssl", "tmux"]
+    }
+]

@@ -21,28 +21,46 @@ export PATH="$HOME/source/jig/bin:$PATH"
 source <(jig completion bash)   # or zsh
 ```
 
-## Plugins
+## Packs
 
-Jig ships with only the core framework. Commands are added via packs:
+Jig ships with only the core framework. Commands are added via packs.
+
+Browse what's available in the registry:
 
 ```bash
-jig pack install https://github.com/n7on/jig-microsoft
-jig pack install https://github.com/n7on/jig-note
-jig pack install https://github.com/n7on/jig-export
-jig pack install https://github.com/n7on/jig-general
+jig pack available
 ```
 
-List installed packs:
+Install by registry name, or by git URL for packs not in the registry:
+
+```bash
+jig pack install jig-note                              # by name
+jig pack install https://github.com/you/your-pack      # by URL
+```
+
+List installed packs, then update or remove:
 
 ```bash
 jig pack list
-```
-
-Update or remove:
-
-```bash
 jig pack update
 jig pack remove jig-note
+```
+
+### Publishing a pack
+
+To get your pack listed in the registry, open a PR against
+[`src/pack/packs.json`](src/pack/packs.json) adding an entry with `name`, `url`,
+`description`, and the list of `modules` (top-level folders under `src/`) your
+pack provides.
+
+## Discovering commands
+
+Commands are discovered at runtime — there is no static command reference, since the available commands depend on which packs you have installed.
+
+```bash
+jig command list                # list all commands from core + installed packs
+jig command show <command>      # show parameters and help for a command
+jig command docs                # render full markdown reference (ad-hoc)
 ```
 
 ## Output formats

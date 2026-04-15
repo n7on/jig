@@ -32,7 +32,7 @@ _output_render() {
     fi
 
     local -a args=(--headers "$headers" --format "$format")
-    local term_width=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+    local term_width=${COLUMNS:-$({ tput cols </dev/tty || echo 80; } 2>/dev/null)}
     args+=(--width "$term_width")
 
     [[ -n "${filter:-}" ]] && args+=(--filter "$filter")

@@ -1,6 +1,35 @@
 _require_module "json"
 
 _PACK_DIR="$HOME/.jig/pack"
+_PACK_REGISTRY="$(dirname "${BASH_SOURCE[0]}")/packs.json"
+
+# Resolve a pack name or git URL to a clone URL.
+# URL-shaped (contains '://' or starts with 'git@') is returned unchanged;
+# otherwise looks up the name in the registry.
+_pack_resolve_url() {
+    local arg="$1"
+
+    if [[ "$arg" == *"://"* || "$arg" == git@* ]]; then
+        echo "$arg"
+        return 0
+    fi
+
+    [[ -f "$_PACK_REGISTRY" ]] || {
+        _message_error "Registry not found: $_PACK_REGISTRY"
+        return 1
+    }
+
+    local url
+    url=$(cat "$_PACK_REGISTRY" \
+        | json_find --path '.' --where 'name' --equals "$arg" --return 'url')
+
+    if [[ -z "$url" || "$url" == "-" ]]; then
+        _message_error "Unknown pack '$arg'. Run 'jig pack available' to see the registry, or pass a git URL."
+        return 1
+    fi
+
+    echo "$url"
+}
 
 _pack_install_dir() {
     local name="$1" url="$2" dest="$3"
@@ -47,10 +76,13 @@ _pack_install_dir() {
 }
 
 pack_install() {
-    _description "Install a pack from a git repository"
+    _description "Install a pack by registry name or git URL"
     _requires git || return 1
-    _param url --required --positional --help "Git repository URL"
+    _param pack --required --positional --help "Pack name (from registry) or git repository URL"
     _param_parse "$@" || return 1
+
+    local url
+    url=$(_pack_resolve_url "$pack") || return 1
 
     local name
     name="$(basename "$url" .git)"
@@ -66,6 +98,14 @@ pack_install() {
 
     _config_append "pack" "packs" "$(json_build "name=$name" "url=$url")"
     _message_warn "Installed: $name"
+}
+
+pack_available() {
+    _description "List packs available in the jig registry"
+    _param_parse "$@" || return 1
+
+    _exec_python pack available.py "$_PACK_REGISTRY" "$_PACK_DIR" \
+        | _output_render
 }
 
 pack_list() {
@@ -152,8 +192,21 @@ _pack_complete_name() {
     done
 }
 
+# Complete with registry names that are not yet installed
+_pack_complete_available() {
+    [[ -f "$_PACK_REGISTRY" ]] || return 0
+    local name
+    while IFS=$'\t' read -r name _; do
+        [[ -d "$_PACK_DIR/$name" ]] || echo "$name"
+    done < <(cat "$_PACK_REGISTRY" \
+        | json_tsv --path '.' --fields 'name' 2>/dev/null \
+        | tail -n +2)
+}
+
+_complete_params "pack_available"
 _complete_type "pack_install" action
-_complete_params "pack_install" "url"
+_complete_params "pack_install" "pack"
+_complete_func "pack_install" "pack" _pack_complete_available
 _complete_params "pack_list"
 _complete_type "pack_remove" action
 _complete_params "pack_remove" "name"
