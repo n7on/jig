@@ -73,6 +73,21 @@ _pack_install_dir() {
         "$HOME/.jig/.venv/bin/pip" install --quiet --disable-pip-version-check \
             -r "$dest/requirements.txt"
     fi
+
+    # Copy example config files to ~/.jig/<namespace>/
+    local example ns
+    for example in "$dest"/src/*/*.json.example; do
+        [[ -f "$example" ]] || continue
+        ns="$(basename "$(dirname "$example")")"
+        local config_name config_dest
+        config_name="$(basename "$example" .example)"
+        config_dest="$HOME/.jig/$ns/$config_name"
+        if [[ ! -f "$config_dest" ]]; then
+            mkdir -p "$HOME/.jig/$ns"
+            cp "$example" "$config_dest"
+            _message_warn "Created $config_dest — edit it to configure $ns"
+        fi
+    done
 }
 
 pack_install() {

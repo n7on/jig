@@ -21,6 +21,8 @@ if [[ "${1:-}" == "__complete" ]]; then
     _prefix="${2:-}"
     _prev="${3:-}"
     _cur="${4:-}"
+    shift 4 2>/dev/null || shift $#
+    _COMP_WORDS=("$@")
 
     # Top-level: list all available namespaces
     if [[ -z "$_prefix" ]]; then

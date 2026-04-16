@@ -18,11 +18,20 @@ _jig_complete() {
         prefix="${prefix:+${prefix}_}${word}"
     done
 
-    COMPREPLY=($(compgen -W "$(jig __complete "$prefix" "$prev" "$cur" 2>/dev/null)" -- "$cur"))
+    COMPREPLY=($(compgen -W "$(jig __complete "$prefix" "$prev" "$cur" "${typed[@]}" 2>/dev/null)" -- "$cur"))
 }
 
 complete -F _jig_complete jig
 COMPLETION
+
+    # Include shell.bash from installed packs
+    local f
+    for f in "$HOME/.jig/pack"/*/shell.bash; do
+        [[ -f "$f" ]] || continue
+        echo
+        echo "# $(basename "$(dirname "$f")")"
+        cat "$f"
+    done
 }
 
 completion_zsh() {
@@ -45,13 +54,23 @@ _jig() {
     done
     local prefix="${(j:_:)cmd_words}"
 
+    local -a typed=("${words[@]:1:$n}")
     local -a results
-    results=($(jig __complete "$prefix" "$prev" "$cur" 2>/dev/null))
+    results=($(jig __complete "$prefix" "$prev" "$cur" "${typed[@]}" 2>/dev/null))
     compadd -- "${results[@]}"
 }
 
 compdef _jig jig
 COMPLETION
+
+    # Include shell.zsh from installed packs
+    local f
+    for f in "$HOME/.jig/pack"/*/shell.zsh; do
+        [[ -f "$f" ]] || continue
+        echo
+        echo "# $(basename "$(dirname "$f")")"
+        cat "$f"
+    done
 }
 
 _complete_params "completion_bash"

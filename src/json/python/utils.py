@@ -32,9 +32,11 @@ def to_string(value):
 
 
 def load_stdin():
-    """Load JSON from stdin."""
+    """Load JSON from stdin, handling optional UTF-8 BOM."""
     import sys
-    return json.load(sys.stdin)
+    import io
+    reader = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8-sig")
+    return json.load(reader)
 
 
 def resolve_root(data, path):
