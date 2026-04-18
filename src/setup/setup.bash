@@ -17,6 +17,21 @@ setup() {
         return 1
     fi
 
+    if [[ ! -d "$HOME/.jig" ]]; then
+        local repo_url=""
+        read -rp "Do you have an existing ~/.jig repo to restore from? [y/N] " yn
+        if [[ "$yn" =~ ^[Yy] ]]; then
+            read -rp "~/.jig repo URL: " repo_url
+            if [[ -z "$repo_url" ]]; then
+                _message_error "No URL provided"
+                return 1
+            fi
+            _requires git || return 1
+            echo "Cloning $repo_url to $HOME/.jig..."
+            git clone --quiet "$repo_url" "$HOME/.jig" || return 1
+        fi
+    fi
+
     mkdir -p "$HOME/.jig"
 
     # Create .gitignore if missing
@@ -50,14 +65,37 @@ EOF
         _requires git || return 1
         mkdir -p "$_PACK_DIR"
         _pack_install_dir "$name" "$url" "$dest" || continue
-        _message_warn "Installed: $name"
+        echo "Installed: $name"
     done < <(_config_list "pack" "packs" "name,url")
 
-    echo ""
-    echo "Setup complete. Add to your .bashrc or .zshrc:"
-    echo ""
-    echo "  export PATH=\"\$HOME/source/jig/bin:\$PATH\""
-    echo "  source <(jig completion bash)   # or zsh"
+    local shell_rc=""
+    case "${SHELL##*/}" in
+        zsh)  shell_rc="$HOME/.zshrc" ;;
+        bash) shell_rc="$HOME/.bashrc" ;;
+    esac
+
+    if [[ -n "$shell_rc" ]]; then
+        local export_line="export PATH=\"\$HOME/source/jig/bin:\$PATH\""
+        local source_line="source <(jig completion ${SHELL##*/})"
+        local added=0
+        if ! grep -qF 'jig/bin' "$shell_rc" 2>/dev/null; then
+            echo "$export_line" >> "$shell_rc"
+            (( added++ ))
+        fi
+        if ! grep -qF 'jig completion' "$shell_rc" 2>/dev/null; then
+            echo "$source_line" >> "$shell_rc"
+            (( added++ ))
+        fi
+        if (( added > 0 )); then
+            echo "Updated $shell_rc — run: source $shell_rc"
+        fi
+    else
+        echo "Add to your shell rc file:"
+        echo "  export PATH=\"\$HOME/source/jig/bin:\$PATH\""
+        echo "  source <(jig completion bash)   # or zsh"
+    fi
+
+    echo "Setup complete."
 }
 
 _complete_type "setup" action

@@ -82,3 +82,11 @@ _complete_func() {
     local completer_func="$3"
     _COMPLETER_FUNCS["${func}:--${param}"]="$completer_func"
 }
+
+# Register the positional completer for a command (called at file scope)
+# Usage: _complete_positional "my_func" _my_generator
+_complete_positional() {
+    local func="$1"
+    local completer_func="$2"
+    _COMPLETER_FUNCS["${func}:__positional"]="$completer_func"
+}

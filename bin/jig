@@ -58,8 +58,12 @@ if [[ "${1:-}" == "__complete" ]]; then
         exit 0
     fi
 
-    # Prefix is a known command: return its flags
+    # Prefix is a known command: return positional completions or flags
     if declare -F "$_prefix" &>/dev/null; then
+        if [[ "$_cur" != --* && -v _COMPLETER_FUNCS["${_prefix}:__positional"] ]]; then
+            "${_COMPLETER_FUNCS[${_prefix}:__positional]}" "$_cur"
+            exit 0
+        fi
         for _key in "${!_PARAMS[@]}"; do
             [[ "$_key" == "${_prefix}:"* ]] || continue
             echo "--${_key##*:}"

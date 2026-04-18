@@ -68,5 +68,5 @@ _config_list() {
     local config_file
     config_file=$(_config_file "$1" "$2")
     [[ -f "$config_file" ]] || return 0
-    cat "$config_file" | json_tsv --path '.' --fields "$3"
+    cat "$config_file" | json_tsv --path '.' --fields "$3" | tail -n +2
 }

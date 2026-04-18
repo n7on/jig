@@ -1,7 +1,13 @@
 _require_module "json"
+_require_module "git"
 
 _PACK_DIR="$HOME/.jig/pack"
 _PACK_REGISTRY="$(dirname "${BASH_SOURCE[0]}")/packs.json"
+
+_pack_autosync() {
+    [[ -d "$HOME/.jig/.git" ]] || return 0
+    git_sync --path "$HOME/.jig" --message "${1:-sync}"
+}
 
 # Resolve a pack name or git URL to a clone URL.
 # URL-shaped (contains '://' or starts with 'git@') is returned unchanged;
@@ -93,26 +99,27 @@ _pack_install_dir() {
 pack_install() {
     _description "Install a pack by registry name or git URL"
     _requires git || return 1
-    _param pack --required --positional --help "Pack name (from registry) or git repository URL"
+    _param name --required --positional --help "Pack name (from registry) or git repository URL"
     _param_parse "$@" || return 1
 
     local url
-    url=$(_pack_resolve_url "$pack") || return 1
+    url=$(_pack_resolve_url "$name") || return 1
 
-    local name
-    name="$(basename "$url" .git)"
-    local dest="$_PACK_DIR/$name"
+    local pack_name
+    pack_name="$(basename "$url" .git)"
+    local dest="$_PACK_DIR/$pack_name"
 
     if [[ -d "$dest" ]]; then
-        _message_error "Pack '$name' is already installed. Use 'jig pack update $name' to update."
+        _message_error "Pack '$pack_name' is already installed. Use 'jig pack update $pack_name' to update."
         return 1
     fi
 
     mkdir -p "$_PACK_DIR"
-    _pack_install_dir "$name" "$url" "$dest" || return 1
+    _pack_install_dir "$pack_name" "$url" "$dest" || return 1
 
-    _config_append "pack" "packs" "$(json_build "name=$name" "url=$url")"
-    _message_warn "Installed: $name"
+    _config_append "pack" "packs" "$(json_build "name=$pack_name" "url=$url")"
+    echo "Installed: $pack_name"
+    _pack_autosync "pack install $pack_name"
 }
 
 pack_available() {
@@ -163,7 +170,8 @@ pack_remove() {
 
     rm -rf "$dest"
     _config_remove "pack" "packs" "name" "$name"
-    _message_warn "Removed: $name"
+    echo "Removed: $name"
+    _pack_autosync "pack remove $name"
 }
 
 pack_update() {
@@ -195,9 +203,10 @@ pack_update() {
                 "$HOME/.jig/.venv/bin/pip" install --quiet --disable-pip-version-check \
                     -r "$dir/requirements.txt"
             fi
-            _message_warn "Updated: $n"
+            echo "Updated: $n"
         fi
     done
+    _pack_autosync "pack update"
 }
 
 _pack_complete_name() {
@@ -220,12 +229,15 @@ _pack_complete_available() {
 
 _complete_params "pack_available"
 _complete_type "pack_install" action
-_complete_params "pack_install" "pack"
-_complete_func "pack_install" "pack" _pack_complete_available
+_complete_params "pack_install" "name"
+_complete_func "pack_install" "name" _pack_complete_available
+_complete_positional "pack_install" _pack_complete_available
 _complete_params "pack_list"
 _complete_type "pack_remove" action
 _complete_params "pack_remove" "name"
 _complete_func "pack_remove" "name" _pack_complete_name
+_complete_positional "pack_remove" _pack_complete_name
 _complete_type "pack_update" action
 _complete_params "pack_update" "name"
 _complete_func "pack_update" "name" _pack_complete_name
+_complete_positional "pack_update" _pack_complete_name
